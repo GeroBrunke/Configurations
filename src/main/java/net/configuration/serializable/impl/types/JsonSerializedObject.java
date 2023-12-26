@@ -10,18 +10,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-public class ByteSerializedObject extends AbstractSerializedObject {
+public class JsonSerializedObject extends AbstractSerializedObject{
 
-    public ByteSerializedObject(@NotNull Class<?> clazz) {
+    public JsonSerializedObject(@NotNull Class<?> clazz) {
         super(clazz);
     }
 
-    public ByteSerializedObject(@NotNull Class<?> clazz, @NotNull Logger warnLog, boolean printWarnings) {
+    public JsonSerializedObject(@NotNull Class<?> clazz, @NotNull Logger warnLog, boolean printWarnings) {
         super(clazz, warnLog, printWarnings);
     }
 
     @SuppressWarnings("unused")
-    protected ByteSerializedObject(){
+    protected JsonSerializedObject(){
         super();
     }
 
@@ -402,11 +402,6 @@ public class ByteSerializedObject extends AbstractSerializedObject {
 
     @Override
     public void setMap(@NotNull Map<Object, Object> value) {
-
-    }
-
-    @Override
-    public void flush() {
 
     }
 

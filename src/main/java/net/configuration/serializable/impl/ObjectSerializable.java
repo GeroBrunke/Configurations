@@ -4,11 +4,7 @@ import net.configuration.serializable.api.SerializableObject;
 import net.configuration.serializable.api.SerializedObject;
 import org.jetbrains.annotations.NotNull;
 
-public class ObjectSerializable extends AbstractSerializedObject{
-
-    protected ObjectSerializable(@NotNull Class<?> clazz) {
-        super(clazz);
-    }
+public class ObjectSerializable implements SerializableObject  {
 
     @Override
     public void write(@NotNull SerializedObject dest) {

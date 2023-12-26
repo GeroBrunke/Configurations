@@ -4,11 +4,8 @@ import net.configuration.serializable.api.SerializableObject;
 import net.configuration.serializable.api.SerializedObject;
 import org.jetbrains.annotations.NotNull;
 
-public class ArraySerializable extends AbstractSerializedObject{
+public class ArraySerializable implements SerializableObject {
 
-    protected ArraySerializable(@NotNull Class<?> clazz) {
-        super(clazz);
-    }
 
     @Override
     public void write(@NotNull SerializedObject dest) {

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 public interface SerializedObject {
@@ -621,6 +622,42 @@ public interface SerializedObject {
      * @param value The value to write.
      */
     void setList(@NotNull Collection<SerializableObject> value);
+
+    /**
+     * Read the map of serializable objects mapped to the given name from this object.
+     *
+     * @param name The name of the field this map is mapped to.
+     * @param keyClass The type of the key elements in the map (has to be serializable).
+     * @param valueClass The type of the values in the map (has to be serializable).
+     * @return The map mapped to this field name or an empty optional, if no map was found.
+     */
+    Optional<Map<Object, Object>> getMap(@NotNull String name, @NotNull Class<?> keyClass, @NotNull Class<?> valueClass);
+
+    /**
+     * Read the map of serializable objects mapped to the next given field name from this object.
+     *
+     * @param keyClass The type of the key elements in the map (has to be serializable).
+     * @param valueClass The type of the values in the map (has to be serializable).
+     * @return The map mapped to the next field name or an empty optional, if no map was found.
+     */
+    Optional<Map<Object, Object>> getMap(@NotNull Class<?> keyClass, @NotNull Class<?> valueClass);
+
+    /**
+     * Write the given map of serializable objects mapped to the given name into this object.
+     *
+     * @param name The field name this map is mapped to.
+     * @param value The map to write.
+     */
+    void setMap(@NotNull String name, @NotNull Map<Object, Object> value);
+
+    /**
+     * Write the given map of serializable objects value into this object. Since there is no field name
+     * given, this method creates a dummy name like "map-{id}" where id is the next free id for map names
+     * in this object.
+     *
+     * @param value The value to write.
+     */
+    void setMap(@NotNull Map<Object, Object> value);
 
     //############################## void/static methods ################################
 

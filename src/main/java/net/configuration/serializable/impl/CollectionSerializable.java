@@ -4,10 +4,12 @@ import net.configuration.serializable.api.SerializableObject;
 import net.configuration.serializable.api.SerializedObject;
 import org.jetbrains.annotations.NotNull;
 
-public class CollectionSerializable extends AbstractSerializedObject{
+import java.util.Collection;
 
-    protected CollectionSerializable(@NotNull Class<?> clazz) {
-        super(clazz);
+public class CollectionSerializable implements SerializableObject {
+
+    public CollectionSerializable(@NotNull Collection<?> collection){
+
     }
 
     @Override
