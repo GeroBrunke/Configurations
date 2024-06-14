@@ -313,7 +313,7 @@ public interface SerializedObject {
      *
      * @return The enum value mapped to the next field name or an empty optional, if no enum was found.
      */
-    <T extends Enum<T>> Optional<T> getEnum(@NotNull Class<T> classOfT);
+    <T extends Enum<T>> Optional<T> getEnum(@NotNull Class<? extends Enum<?>> classOfT);
 
     /**
      * Write the given enum mapped to the given name into this object.
@@ -497,6 +497,37 @@ public interface SerializedObject {
      * @param value The value to write.
      */
     void setIntList(@NotNull Collection<Integer> value);
+
+    /**
+     * Read the long collection mapped to the given name from this object.
+     *
+     * @param name The name of the field this collection is mapped to.
+     * @return The collection mapped to this field name or an empty optional, if no collection was found.
+     */
+    Optional<Collection<Long>> getLongList(@NotNull String name);
+
+    /**
+     * Read the long collection mapped to the next given field name from this object.
+     *
+     * @return The collection mapped to the next field name or an empty optional, if no collection was found.
+     */
+    Optional<Collection<Long>> getLongList();
+
+    /**
+     * Write the given long collection mapped to the given name into this object.
+     *
+     * @param name The field name this collection is mapped to.
+     * @param value The collection to write.
+     */
+    void setLongList(@NotNull String name, @NotNull Collection<Long> value);
+
+    /**
+     * Write the given long collection value into this object. Since there is no field name given, this method creates a
+     * dummy name like "longList-{id}" where id is the next free id for long collection names in this object.
+     *
+     * @param value The value to write.
+     */
+    void setLongList(@NotNull Collection<Long> value);
 
     /**
      * Read the double collection mapped to the given name from this object.

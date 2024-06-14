@@ -58,6 +58,11 @@ public class PrimitiveSerializable implements SerializableObject  {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> T getData() {
+        return (T) data;
+    }
+
     /**
      * Set the primitive object into the given {@link SerializedObject}.
      *

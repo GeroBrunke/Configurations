@@ -59,9 +59,31 @@ public class EnumSerializable implements SerializableObject  {
     }
 
     @NotNull
-    public Object getEnumValue(){
+    @SuppressWarnings("unchecked")
+    public <T extends Enum<T>> T getEnumValue(){
         try {
-            return this.getEnumClass().getDeclaredMethod("valueOf", String.class).invoke(null, this.enumValue);
+            Object obj = this.getEnumClass().getDeclaredMethod("valueOf", String.class).invoke(null, this.enumValue);
+            return (T) obj;
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new SerializationException(e);
+        }
+    }
+
+    /**
+     * Convert the object instance of an enum value into a correct enum value.
+     *
+     * @param enumSuspect The object instance of an enum.
+     * @return The enum instance of that object.
+     * @throws SerializationException If the given object is no enum.
+     */
+    @SuppressWarnings("unchecked")
+    //convert the enum object to a 'real' enum instance
+    @NotNull
+    public static <T extends Enum<T>> T toEnum(@NotNull Object enumSuspect){
+        try {
+            Class<?> c = enumSuspect.getClass();
+            String name = (String) c.getMethod("name").invoke(enumSuspect);
+            return (T) c.getMethod("valueOf", String.class).invoke(null, name);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new SerializationException(e);
         }
