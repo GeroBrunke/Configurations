@@ -19,7 +19,6 @@ public interface SerializableObject extends Serializable {
      * @param src The serialized version of the object to read from.
      * @return The deserialized version of the object.
      */
-    @SerializationAPI
     @NotNull SerializableObject read(@NotNull SerializedObject src);
 
 }

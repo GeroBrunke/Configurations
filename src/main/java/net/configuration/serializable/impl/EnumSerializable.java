@@ -1,8 +1,6 @@
 package net.configuration.serializable.impl;
 
-import net.configuration.serializable.api.SerializableObject;
-import net.configuration.serializable.api.SerializationException;
-import net.configuration.serializable.api.SerializedObject;
+import net.configuration.serializable.api.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -10,6 +8,9 @@ import java.util.Optional;
 
 public class EnumSerializable implements SerializableObject  {
 
+    @SerializationAPI
+    @SuppressWarnings("unused")
+    private static final Creator<EnumSerializable> CREATOR = new SimpleCreatorImpl<>(EnumSerializable.class);
     private String enumClass;
     private String enumValue;
 
@@ -76,16 +77,9 @@ public class EnumSerializable implements SerializableObject  {
      * @return The enum instance of that object.
      * @throws SerializationException If the given object is no enum.
      */
-    @SuppressWarnings("unchecked")
     //convert the enum object to a 'real' enum instance
     @NotNull
     public static <T extends Enum<T>> T toEnum(@NotNull Object enumSuspect){
-        try {
-            Class<?> c = enumSuspect.getClass();
-            String name = (String) c.getMethod("name").invoke(enumSuspect);
-            return (T) c.getMethod("valueOf", String.class).invoke(null, name);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new SerializationException(e);
-        }
+        return SerializationHelper.toEnum(enumSuspect);
     }
 }

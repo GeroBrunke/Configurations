@@ -6,14 +6,23 @@ import net.configuration.serializable.api.SerializationAPI;
 import net.configuration.serializable.api.SerializedObject;
 import org.jetbrains.annotations.NotNull;
 
-public class GenericSerializable<T> implements SerializableObject  {
+import java.util.Map;
+
+public class MapSerializable implements SerializableObject {
 
     @SerializationAPI
-    @SuppressWarnings({"unused","rawtypes"})
-    private static final Creator<GenericSerializable> CREATOR = new SimpleCreatorImpl<>(GenericSerializable.class);
+    @SuppressWarnings("unused")
+    private static final Creator<MapSerializable> CREATOR = new SimpleCreatorImpl<>(MapSerializable.class);
 
-    public GenericSerializable(@NotNull Class<T> classOfT){
+    @SuppressWarnings("unused") //called via reflection API
+    private MapSerializable(){} //Hide implicit
 
+    public MapSerializable(@NotNull Map<?,?> map){
+
+    }
+
+    public <K,V> Map<K,V> getMap(@NotNull Class<K> classOfK, @NotNull Class<V> classOfV){
+        return null;
     }
 
     @Override
@@ -21,11 +30,8 @@ public class GenericSerializable<T> implements SerializableObject  {
 
     }
 
-    @SuppressWarnings("unused") //called via reflection API
-    private GenericSerializable(){} //Hide implicit
-
     @Override
     public @NotNull SerializableObject read(@NotNull SerializedObject src) {
-        return this;
+        return null;
     }
 }

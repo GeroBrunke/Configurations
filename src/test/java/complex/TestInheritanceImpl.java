@@ -1,11 +1,10 @@
-package net.configuration.serializable.impl;
+package complex;
 
 import net.configuration.serializable.api.SerializableObject;
 import net.configuration.serializable.api.SerializedObject;
 import org.jetbrains.annotations.NotNull;
 
-public class ArraySerializable implements SerializableObject {
-
+class TestInheritanceImpl implements TestInheritanceInterface{
 
     @Override
     public void write(@NotNull SerializedObject dest) {
@@ -14,6 +13,11 @@ public class ArraySerializable implements SerializableObject {
 
     @Override
     public @NotNull SerializableObject read(@NotNull SerializedObject src) {
-        return this;
+        return null;
+    }
+
+    @Override
+    public void test() {
+
     }
 }

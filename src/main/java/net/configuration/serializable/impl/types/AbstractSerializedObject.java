@@ -9,6 +9,7 @@ import net.configuration.serializable.api.SerializedObject;
 import org.apache.commons.lang3.ClassUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -18,7 +19,9 @@ import java.util.logging.Logger;
 
 public abstract class AbstractSerializedObject implements SerializedObject {
 
-    @NotNull protected final Class<?> clazz;
+    private int counter = 0;
+
+    @NotNull protected Class<?> clazz;
     protected Logger logger;
     protected boolean printWarnings = false;
 
@@ -44,14 +47,24 @@ public abstract class AbstractSerializedObject implements SerializedObject {
     }
 
     @Override
-    public Class<?> getForClass() {
-        return clazz;
+    public @NotNull Optional<Class<?>> getForClass() {
+        if(clazz == Class.class)
+            return Optional.empty();
+
+        return Optional.of(clazz);
+    }
+
+    @Override
+    public <T extends SerializableObject> void setForClass(@NotNull Class<T> clazz) {
+        this.clazz = clazz;
+        this.loadClassFields();
     }
 
     @Override
     public void flush() {
         //reset field pointers
         this.fieldPointer.replaceAll((k, v) -> 0);
+        this.counter = 0;
     }
 
     /**
@@ -85,7 +98,7 @@ public abstract class AbstractSerializedObject implements SerializedObject {
             //check if the field type is valid: PrimitiveWrapper, String, Enum, Collection or a serializable object
             if(!(ClassUtils.isPrimitiveWrapper(type) || type == String.class || type.isEnum() ||
                     Collection.class.isAssignableFrom(type) || SerializableObject.class.isAssignableFrom(type) ||
-                    SerializedObject.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type))){
+                    SerializedObject.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type) || type == Object.class)){
 
                 throw new SerializationException("Cannot serialize field {" + name + ", type: " + type.getName() + "} " +
                         "in class " + this.clazz.getName());
@@ -133,7 +146,9 @@ public abstract class AbstractSerializedObject implements SerializedObject {
         }
 
         if(!this.classFields.containsKey(forType) || !this.fieldPointer.containsKey(forType)){
-            throw new SerializationException("No field found for type " + forType.getName());
+            //add a dummy id
+            int id = counter++;
+            return String.valueOf(id);
         }
 
         int ptr = this.fieldPointer.remove(forType);
@@ -157,6 +172,251 @@ public abstract class AbstractSerializedObject implements SerializedObject {
             return true;
         }catch(SerializationException e){
             return false;
+        }
+    }
+
+    /**
+     * Deserializes the array of given type mapped to the name from this serialized object.
+     *
+     * @param name The name the array is mapped to.
+     * @param classOfT The element type of the array.
+     * @return The deserialized array or an empty optional if there was no array of given type mapped to the name.
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> Optional<T[]> getArrayHelper(@NotNull String name, @NotNull Class<T> classOfT) {
+        if(ClassUtils.isPrimitiveOrWrapper(classOfT) || classOfT == String.class){
+            T[] array;
+            if(classOfT.isPrimitive()){
+                array = (T[]) this.getPrimitiveArray(name, ClassUtils.primitiveToWrapper(classOfT));
+            }else{
+                array = this.getPrimitiveArray(name, classOfT);
+            }
+
+            if(array.length > 0)
+                return Optional.of(array);
+
+        }else if(SerializableObject.class.isAssignableFrom(classOfT)){
+            Class<? extends SerializableObject> c = (Class<? extends SerializableObject>) classOfT;
+            Optional<Collection<SerializableObject>> listOpt = this.getList(name, c);
+            if(listOpt.isPresent()){
+                Collection<SerializableObject> list = listOpt.get();
+                T[] array = (T[]) Array.newInstance(classOfT, list.size());
+                int i = 0;
+                for(SerializableObject val : list){
+                    array[i++] = (T) val;
+                }
+                return Optional.of(array);
+            }
+
+        }else{
+            throw new SerializationException("Could not deserialize array");
+        }
+
+        return Optional.empty();
+    }
+
+
+    /**
+     * Write the given array into this serialized object mapped to the provided name.
+     *
+     * @param name The name the array will be mapped to.
+     * @param array The array to write.
+     * @param classOfT The type of the array elements.
+     */
+    protected <T> void setArray(@NotNull String name, T @NotNull[] array, @NotNull Class<T> classOfT){
+        if(ClassUtils.isPrimitiveWrapper(classOfT)){
+            this.setPrimitiveArray(name, array, classOfT);
+
+        }else if(classOfT == String.class){
+            List<String> list = new ArrayList<>(array.length);
+            for(T val : array){
+                list.add((String) val);
+            }
+
+            this.setStringList(name, list);
+
+        }else if(SerializableObject.class.isAssignableFrom(classOfT)){
+            List<SerializableObject> list = new ArrayList<>(array.length);
+            for(T val : array){
+                list.add((SerializableObject) val);
+            }
+            this.setList(name, list);
+
+        }else{
+            throw new SerializationException("Could not serialize array");
+        }
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private <T> T[] getPrimitiveArray(@NotNull String name, @NotNull Class<T> classOfT){
+        if(classOfT == Short.class || classOfT == Integer.class){
+            Optional<Collection<Integer>> listOpt = this.getIntList(name);
+            if(listOpt.isPresent()){
+                Collection<Integer> list = listOpt.get();
+                if(classOfT == Short.class){
+                    Short[] array = new Short[list.size()];
+                    int i = 0;
+                    for(Integer val : list){
+                        array[i++] = val.shortValue();
+                    }
+                    return (T[]) array;
+                }
+
+                Integer[] array = new Integer[list.size()];
+                int i = 0;
+                for(Integer val : list){
+                    array[i++] = val;
+                }
+                return (T[]) array;
+            }
+
+        }else if(classOfT == Long.class){
+            Optional<Collection<Long>> listOpt = this.getLongList(name);
+            if(listOpt.isPresent()){
+                Collection<Long> list = listOpt.get();
+                Long[] array = new Long[list.size()];
+                int i = 0;
+                for(Long val : list){
+                    array[i++] = val;
+                }
+                return (T[]) array;
+            }
+
+        }else if(classOfT == Float.class || classOfT == Double.class){
+            return this.getPrimitiveDecimalArray(name, classOfT);
+
+        }else{
+            return getPrimitiveArray0(name, classOfT);
+        }
+
+        return (T[]) Array.newInstance(classOfT, 0);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T[] getPrimitiveDecimalArray(@NotNull String name, @NotNull Class<T> classOfT){
+        if(classOfT == Float.class || classOfT == Double.class){
+            Optional<Collection<Double>> listOpt = this.getDoubleList(name);
+            if(listOpt.isPresent()){
+                Collection<Double> list = listOpt.get();
+                if(classOfT == Float.class){
+                    Float[] array = new Float[list.size()];
+                    int i = 0;
+                    for(Double val : list){
+                        array[i++] = val.floatValue();
+                    }
+                    return (T[]) array;
+                }
+
+                Double[] array = new Double[list.size()];
+                int i = 0;
+                for(Double val : list){
+                    array[i++] = val;
+                }
+                return (T[]) array;
+            }
+        }
+
+        return (T[]) Array.newInstance(classOfT, 0);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T[] getPrimitiveArray0(@NotNull String name, @NotNull Class<T> classOfT){
+        if(classOfT == Byte.class || classOfT == Boolean.class){
+            Optional<Collection<Byte>> listOpt = this.getByteList(name);
+            if(listOpt.isPresent()){
+                Collection<Byte> list = listOpt.get();
+                if(classOfT == Boolean.class){
+                    Boolean[] array = new Boolean[list.size()];
+                    int i = 0;
+                    for(Byte val : list){
+                        array[i++] = val == (byte) 1;
+                    }
+                    return (T[]) array;
+                }
+
+                Byte[] array = new Byte[list.size()];
+                int i = 0;
+                for(Byte val : list){
+                    array[i++] = val;
+                }
+                return (T[]) array;
+
+            }
+
+        }else if(classOfT == Character.class){
+            Optional<Collection<String>> listOpt = this.getStringList(name);
+            if(listOpt.isPresent()){
+                Collection<String> list = listOpt.get();
+                Character[] array = new Character[list.size()];
+                int i = 0;
+                for(String val : list){
+                    array[i++] = val.charAt(0);
+                }
+                return (T[]) array;
+            }
+        }else if(classOfT == String.class){
+            Optional<Collection<String>> listOpt = this.getStringList(name);
+            if(listOpt.isPresent()){
+                Collection<String> list = listOpt.get();
+                String[] array = new String[list.size()];
+                int i = 0;
+                for(String val : list){
+                    array[i++] = val;
+                }
+                return (T[]) array;
+            }
+        }
+
+        return (T[]) Array.newInstance(classOfT, 0);
+    }
+
+    private <T> void setPrimitiveArray(@NotNull String name, T @NotNull[] array, @NotNull Class<T> classOfT){
+        if(classOfT == Byte.class || classOfT == Boolean.class){
+            List<Byte> list = new ArrayList<>(array.length);
+            for(T val : array){
+                byte bVal;
+                if(classOfT == Boolean.class)
+                    bVal = (boolean) val ? (byte) 1 : (byte) 0;
+                else
+                    bVal = (byte) val;
+
+                list.add(bVal);
+            }
+
+            this.setByteList(name, list);
+
+        }else if(classOfT == Short.class || classOfT == Integer.class){
+            List<Integer> list = new ArrayList<>(array.length);
+            for(T val : array){
+                list.add((int) val);
+            }
+
+            this.setIntList(name, list);
+
+        }else if(classOfT == Long.class){
+            List<Long> list = new ArrayList<>(array.length);
+            for(T val : array){
+                list.add((long) val);
+            }
+
+            this.setLongList(name, list);
+
+        }else if(classOfT == Float.class || classOfT == Double.class){
+            List<Double> list = new ArrayList<>(array.length);
+            for(T val : array){
+                list.add((double) val);
+            }
+
+            this.setDoubleList(name, list);
+
+        }else if(classOfT == Character.class){
+            List<String> list = new ArrayList<>(array.length);
+            for(T val : array){
+                list.add(String.valueOf((char) val));
+            }
+
+            this.setStringList(name, list);
         }
     }
 

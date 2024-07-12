@@ -8,6 +8,10 @@ import java.util.*;
 
 public class CollectionSerializable implements SerializableObject {
 
+    @SerializationAPI
+    @SuppressWarnings("unused")
+    private static final Creator<CollectionSerializable> CREATOR = new SimpleCreatorImpl<>(CollectionSerializable.class);
+
     private String elementType;
     private Collection<?> collection; //no transient since this class ensures that it is serializable or throws an exception
 
@@ -25,6 +29,9 @@ public class CollectionSerializable implements SerializableObject {
 
         this.collection = collection;
     }
+
+    @SuppressWarnings("unused") //called via reflection API
+    private CollectionSerializable(){} //Hide implicit
 
     @Override
     public void write(@NotNull SerializedObject dest) {
@@ -198,7 +205,7 @@ public class CollectionSerializable implements SerializableObject {
             return list;
 
         }else if(SerializableObject.class.isAssignableFrom(Class.forName(elementType))){
-            Optional<Collection<SerializableObject>> listOpt = src.getList();
+            Optional<Collection<SerializableObject>> listOpt = src.getList((Class<? extends SerializableObject>) Class.forName(elementType));
             if(listOpt.isEmpty())
                 throw new SerializationException("Could not deserialize collection");
 

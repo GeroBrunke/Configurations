@@ -4,7 +4,9 @@ import net.configuration.serializable.impl.SimpleCreatorImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -91,11 +93,30 @@ public interface Creator<T extends SerializableObject> {
     @NotNull
     static <T extends SerializableObject> Optional<T> readDefault(@NotNull SerializedObject src, @NotNull Class<T> classOfT){
         try{
-            SimpleCreatorImpl<T> creator = new SimpleCreatorImpl<>();
+            SimpleCreatorImpl<T> creator = new SimpleCreatorImpl<>(classOfT);
             return Optional.of(creator.read(src, classOfT));
         }catch(SerializationException e){
             e.printStackTrace();
             return Optional.empty();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @NotNull static <T extends SerializableObject> Creator<T> getCreator(@NotNull Class<T> classOfT){
+        try{
+            for(Field field : classOfT.getDeclaredFields()){
+                if(field.getAnnotation(SerializationAPI.class) != null && field.getType() == Creator.class){ //field is correctly annotated and a creator
+                    int modifiers = field.getModifiers();
+                    if(Modifier.isFinal(modifiers) && Modifier.isStatic(modifiers)){ //field is static final
+                        field.setAccessible(true);
+                        return (Creator<T>) field.get(null);
+                    }
+                }
+            }
+            throw new IllegalAccessException("Could not find creator field in class " + classOfT.getName());
+
+        }catch (IllegalAccessException e){
+            throw new IllegalArgumentException(e); //cannot init creator in the given class
         }
     }
 

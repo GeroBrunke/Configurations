@@ -1,8 +1,6 @@
 package net.configuration.serializable.impl;
 
-import net.configuration.serializable.api.SerializableObject;
-import net.configuration.serializable.api.SerializationException;
-import net.configuration.serializable.api.SerializedObject;
+import net.configuration.serializable.api.*;
 import org.apache.commons.lang3.ClassUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,6 +8,9 @@ import java.util.Optional;
 
 public class PrimitiveSerializable implements SerializableObject  {
 
+    @SerializationAPI
+    @SuppressWarnings("unused")
+    private static final Creator<PrimitiveSerializable> CREATOR = new SimpleCreatorImpl<>(PrimitiveSerializable.class);
     private String clazz;
     private Object data; //cannot be directly transient but the "primitiveness" of the object ensures serializability
 

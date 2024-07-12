@@ -5,6 +5,7 @@ import net.configuration.serializable.api.SerializedObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -12,8 +13,14 @@ import java.util.logging.Logger;
 
 public class ByteSerializedObject extends AbstractSerializedObject {
 
+    public static final int BUFFER_SIZE = (int) Math.pow(2, 20); //max read 1MB
+
     public ByteSerializedObject(@NotNull Class<?> clazz) {
         super(clazz);
+    }
+
+    public ByteSerializedObject(@NotNull ByteBuffer buffer, @NotNull Class<?> clazz){
+
     }
 
     public ByteSerializedObject(@NotNull Class<?> clazz, @NotNull Logger warnLog, boolean printWarnings) {
@@ -206,12 +213,33 @@ public class ByteSerializedObject extends AbstractSerializedObject {
     }
 
     @Override
-    public <T extends Enum<T>> Optional<T> getEnum(@NotNull String name, @NotNull Class<T> classOfT) {
+    public <T> Optional<T[]> getArray(@NotNull String name, @NotNull Class<T> classOfT) {
         return Optional.empty();
     }
 
     @Override
-    public <T extends Enum<T>> Optional<T> getEnum(@NotNull Class<T> classOfT) {
+    public <T> Optional<T[]> getArray(@NotNull Class<T> classOfT) {
+        return Optional.empty();
+    }
+
+    @Override
+    public <T> void setArray(@NotNull String name, T @NotNull [] array) {
+
+    }
+
+    @Override
+    public <T> void setArray(T @NotNull [] array) {
+
+    }
+
+    @Override
+    public <T extends Enum<T>> Optional<T> getEnum(@NotNull String name, @NotNull Class<? extends Enum<?>> classOfT) {
+        return Optional.empty();
+    }
+
+
+    @Override
+    public <T extends Enum<T>> Optional<T> getEnum(@NotNull Class<? extends Enum<?>> classOfT) {
         return Optional.empty();
     }
 
@@ -226,14 +254,15 @@ public class ByteSerializedObject extends AbstractSerializedObject {
     }
 
     @Override
-    public Optional<SerializableObject> getSerializable(@NotNull String name) {
+    public <T extends SerializableObject> Optional<T> getSerializable(@NotNull String name, @NotNull Class<T> classOfT) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<SerializableObject> getSerializable() {
+    public <T extends SerializableObject> Optional<T> getSerializable(Class<T> classOfT) {
         return Optional.empty();
     }
+
 
     @Override
     public void setSerializable(@NotNull String name, @NotNull SerializableObject value) {
@@ -266,12 +295,12 @@ public class ByteSerializedObject extends AbstractSerializedObject {
     }
 
     @Override
-    public Optional<SerializedObject> getNull(@NotNull String name) {
+    public Optional<SerializableObject> getNull(@NotNull String name) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<SerializedObject> getNull() {
+    public Optional<SerializableObject> getNull() {
         return Optional.empty();
     }
 
@@ -283,6 +312,11 @@ public class ByteSerializedObject extends AbstractSerializedObject {
     @Override
     public void setNull() {
 
+    }
+
+    @Override
+    public boolean isNextNull(@NotNull Class<?> type) {
+        return false;
     }
 
     @Override
@@ -302,6 +336,26 @@ public class ByteSerializedObject extends AbstractSerializedObject {
 
     @Override
     public void setIntList(@NotNull Collection<Integer> value) {
+
+    }
+
+    @Override
+    public Optional<Collection<Long>> getLongList(@NotNull String name) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Collection<Long>> getLongList() {
+        return Optional.empty();
+    }
+
+    @Override
+    public void setLongList(@NotNull String name, @NotNull Collection<Long> value) {
+
+    }
+
+    @Override
+    public void setLongList(@NotNull Collection<Long> value) {
 
     }
 
@@ -366,42 +420,43 @@ public class ByteSerializedObject extends AbstractSerializedObject {
     }
 
     @Override
-    public Optional<Collection<SerializableObject>> getList(@NotNull String name) {
+    public Optional<Collection<SerializableObject>> getList(@NotNull String name, Class<? extends SerializableObject> clazz) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<Collection<SerializableObject>> getList() {
+    public Optional<Collection<SerializableObject>> getList(Class<? extends SerializableObject> clazz) {
         return Optional.empty();
     }
 
     @Override
-    public void setList(@NotNull String name, @NotNull Collection<SerializableObject> value) {
+    public void setList(@NotNull String name, @NotNull Collection<? extends SerializableObject> value) {
 
     }
 
     @Override
-    public void setList(@NotNull Collection<SerializableObject> value) {
+    public void setList(@NotNull Collection<? extends SerializableObject> value) {
 
     }
 
     @Override
-    public Optional<Map<Object, Object>> getMap(@NotNull String name, @NotNull Class<?> keyClass, @NotNull Class<?> valueClass) {
+    public <K, V> Optional<Map<K, V>> getMap(@NotNull String name, @NotNull Class<K> keyClass, @NotNull Class<V> valueClass) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<Map<Object, Object>> getMap(@NotNull Class<?> keyClass, @NotNull Class<?> valueClass) {
+    public <K, V> Optional<Map<K, V>> getMap(@NotNull Class<K> keyClass, @NotNull Class<V> valueClass) {
         return Optional.empty();
     }
 
+
     @Override
-    public void setMap(@NotNull String name, @NotNull Map<Object, Object> value) {
+    public <K, V> void setMap(@NotNull String name, @NotNull Map<K, V> value) {
 
     }
 
     @Override
-    public void setMap(@NotNull Map<Object, Object> value) {
+    public <K, V> void setMap(@NotNull Map<K, V> value) {
 
     }
 
@@ -418,5 +473,10 @@ public class ByteSerializedObject extends AbstractSerializedObject {
     @Override
     public void writeToStream(@NotNull OutputStream stream) {
 
+    }
+
+    @Override
+    public Optional<Object> getRawObject(@NotNull String name, @NotNull Class<?> classOfT) {
+        return Optional.empty();
     }
 }

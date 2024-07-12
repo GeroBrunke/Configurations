@@ -1,0 +1,7 @@
+package complex;
+
+class TestSpecialObjects {
+
+
+
+}

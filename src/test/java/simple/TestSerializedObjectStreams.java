@@ -1,7 +1,0 @@
-package simple;
-
-class TestSerializedObjectStreams {
-
-
-
-}

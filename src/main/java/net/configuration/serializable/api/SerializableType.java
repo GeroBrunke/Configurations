@@ -14,7 +14,7 @@ public enum SerializableType {
     XML(XmlSerializedObject.class, ".xml"),
     TEXT(TextSerializedObject.class, ".txt"),
     PROPERTIES(PropertiesSerializedObject.class, ".properties"),
-    SQL(SQLSerializedObject.class, ".sql");
+    SQL(SQLSerializedObject.class, ".sqlData");
 
     @NotNull private final Class<? extends SerializedObject> implClass;
     @NotNull private final String fileExtension;
@@ -59,7 +59,21 @@ public enum SerializableType {
         }
     }
 
+
     public @NotNull String getFileExtension() {
         return fileExtension;
+    }
+
+    public @NotNull Class<? extends SerializedObject> getImplClass() {
+        return implClass;
+    }
+
+    public static SerializableType fromImplementationClass(Class<?> implClass){
+        for(SerializableType type : values()){
+            if(type.implClass == implClass){
+                return type;
+            }
+        }
+        return null;
     }
 }
