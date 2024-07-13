@@ -453,7 +453,7 @@ public interface SerializedObject extends ObjectSerializer{
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     default <T> Optional<T> getObject(@NotNull String name, @NotNull Class<T> classOfT){
-        if(this.isNextNull(classOfT))
+        if(this.isNextNull(name, classOfT))
             return Optional.empty();
 
         if(classOfT.isEnum()){
@@ -485,7 +485,19 @@ public interface SerializedObject extends ObjectSerializer{
                 return Optional.of(val);
             }
 
-        }else if(Map.class.isAssignableFrom(classOfT)){
+        }else {
+            return getCollectionFromObject(name, classOfT);
+        }
+
+        return Optional.empty();
+    }
+
+    /**
+     * Only used internally. Use {@link SerializedObject#getObject(String, Class)} instead.
+     */
+    @SuppressWarnings("unchecked")
+    default <T> Optional<T> getCollectionFromObject(@NotNull String name, @NotNull Class<T> classOfT){
+        if(Map.class.isAssignableFrom(classOfT)){
             Optional<MapSerializable> opt = this.getSerializable(name, MapSerializable.class);
             if(opt.isPresent()){
                 Map<?,?> val = opt.get().getMap(Object.class, Object.class);
@@ -525,6 +537,7 @@ public interface SerializedObject extends ObjectSerializer{
 
         return Optional.empty();
     }
+
 
     /**
      * Write the given object mapped to the given name into this object.
@@ -619,6 +632,12 @@ public interface SerializedObject extends ObjectSerializer{
      * @return If the next value is a null value.
      */
     boolean isNextNull(@NotNull Class<?> type);
+
+    /**
+     * Check if the value mapped to the given name stores a null serialized value.
+     * @return If the next value is a null value.
+     */
+    boolean isNextNull(@NotNull String name, @NotNull Class<?> type);
 
 
     //############################## List values ################################

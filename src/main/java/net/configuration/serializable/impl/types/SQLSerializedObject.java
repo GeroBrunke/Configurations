@@ -315,6 +315,11 @@ public class SQLSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
+    public boolean isNextNull(@NotNull String name, @NotNull Class<?> type) {
+        return false;
+    }
+
+    @Override
     public Optional<Collection<Integer>> getIntList(@NotNull String name) {
         return Optional.empty();
     }

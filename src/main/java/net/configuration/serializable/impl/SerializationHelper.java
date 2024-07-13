@@ -194,33 +194,8 @@ public class SerializationHelper {
                 return Optional.of(val);
             }
 
-        }else if(classOfT == Byte.class){
-            Optional<Byte> opt = obj.getByte(name);
-            if(opt.isPresent()){
-                T val = (T) opt.get();
-                return Optional.of(val);
-            }
-
-        }else if(classOfT == Short.class){
-            Optional<Short> opt = obj.getShort(name);
-            if(opt.isPresent()){
-                T val = (T) opt.get();
-                return Optional.of(val);
-            }
-
-        }else if(classOfT == Integer.class){
-            Optional<Integer> opt = obj.getInt(name);
-            if(opt.isPresent()){
-                T val = (T) opt.get();
-                return Optional.of(val);
-            }
-
-        }else if(classOfT == Long.class){
-            Optional<Long> opt = obj.getLong(name);
-            if(opt.isPresent()){
-                T val = (T) opt.get();
-                return Optional.of(val);
-            }
+        }else if(classOfT == Byte.class || classOfT == Long.class || classOfT == Integer.class || classOfT == Short.class){
+            return getPrimitiveInteger(name, obj, classOfT);
 
         }else if(classOfT == Float.class){
             Optional<Float> opt = obj.getFloat(name);
@@ -252,6 +227,41 @@ public class SerializationHelper {
 
         }else{
             throw new IllegalArgumentException("Cannot deserialize primitive object for " + classOfT.getName());
+        }
+
+        return Optional.empty();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Optional<T> getPrimitiveInteger(@NotNull String name, @NotNull SerializedObject obj, Class<?> classOfT){
+        if(classOfT == Byte.class){
+            Optional<Byte> opt = obj.getByte(name);
+            if(opt.isPresent()){
+                T val = (T) opt.get();
+                return Optional.of(val);
+            }
+
+        }else if(classOfT == Short.class){
+            Optional<Short> opt = obj.getShort(name);
+            if(opt.isPresent()){
+                T val = (T) opt.get();
+                return Optional.of(val);
+            }
+
+        }else if(classOfT == Integer.class){
+            Optional<Integer> opt = obj.getInt(name);
+            if(opt.isPresent()){
+                T val = (T) opt.get();
+                return Optional.of(val);
+            }
+
+        }else if(classOfT == Long.class){
+            Optional<Long> opt = obj.getLong(name);
+            if(opt.isPresent()){
+                T val = (T) opt.get();
+                return Optional.of(val);
+            }
+
         }
 
         return Optional.empty();
