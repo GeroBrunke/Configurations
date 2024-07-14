@@ -577,7 +577,11 @@ public interface SerializedObject extends ObjectSerializer{
                 return;
             }
 
-            MapSerializable mapSer = new MapSerializable(map);
+            SerializableType type = SerializableType.fromImplementationClass(this.getClass());
+            if(type == null)
+                throw new SerializationException("Could not deduce serializable type from class " + this.getClass());
+
+            MapSerializable mapSer = new MapSerializable(type, map);
             this.setSerializable(name, mapSer);
 
         }else if(value instanceof List<?> list){

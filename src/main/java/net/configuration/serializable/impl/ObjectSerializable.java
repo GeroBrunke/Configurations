@@ -27,7 +27,7 @@ public class ObjectSerializable implements SerializableObject  {
         this.className = clazz.getName();
         this.object = object;
 
-        if (!this.isValid())
+        if (isInvalid(object))
                 throw new SerializationException("Cannot serialize object " + object);
     }
 
@@ -63,10 +63,10 @@ public class ObjectSerializable implements SerializableObject  {
         }
     }
 
-    private boolean isValid(){
-        return object instanceof SerializableObject || object instanceof SerializedObject || object instanceof Map<?,?> ||
-                object instanceof List<?> || object instanceof Enum<?> || object instanceof String ||
-                ClassUtils.isPrimitiveOrWrapper(object.getClass());
+    public static boolean isInvalid(@NotNull Object object){
+        return !(object instanceof SerializableObject) && !(object instanceof SerializedObject) && !(object instanceof Map<?, ?>) &&
+                !(object instanceof List<?>) && !(object instanceof Enum<?>) && !(object instanceof String) &&
+                !ClassUtils.isPrimitiveOrWrapper(object.getClass());
 
     }
 }

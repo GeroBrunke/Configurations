@@ -2,10 +2,8 @@ package net.configuration.serializable.impl.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import net.configuration.serializable.api.IgnoreSerialization;
-import net.configuration.serializable.api.SerializableObject;
-import net.configuration.serializable.api.SerializationException;
-import net.configuration.serializable.api.SerializedObject;
+import net.configuration.serializable.api.*;
+import net.configuration.serializable.impl.TupleSerializable;
 import org.apache.commons.lang3.ClassUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,6 +22,8 @@ public abstract class AbstractSerializedObject implements SerializedObject {
     @NotNull protected Class<?> clazz;
     protected Logger logger;
     protected boolean printWarnings = false;
+
+    protected String ymlPrefix;
 
     //store all field names for a given type in the class
     @NotNull protected final BiMap<Class<?>, List<String>> classFields = HashBiMap.create();
@@ -57,6 +57,7 @@ public abstract class AbstractSerializedObject implements SerializedObject {
     @Override
     public <T extends SerializableObject> void setForClass(@NotNull Class<T> clazz) {
         this.clazz = clazz;
+        this.ymlPrefix = clazz.getSimpleName() + ".";
         this.loadClassFields();
     }
 
@@ -65,6 +66,317 @@ public abstract class AbstractSerializedObject implements SerializedObject {
         //reset field pointers
         this.fieldPointer.replaceAll((k, v) -> 0);
         this.counter = 0;
+    }
+
+
+    //########################## Abstract methods equal in every subclass ###############################
+
+    @Override
+    public Optional<Byte> getByte() {
+        String name = this.getFieldName(Byte.class);
+        return this.getByte(name);
+    }
+
+    @Override
+    public void setByte(byte value) {
+        String name = this.getFieldName(Byte.class);
+        this.setByte(name, value);
+    }
+
+    @Override
+    public Optional<Short> getShort() {
+        String name = this.getFieldName(Short.class);
+        return this.getShort(name);
+    }
+
+    @Override
+    public void setShort(short value) {
+        String name = this.getFieldName(Short.class);
+        this.setShort(name, value);
+    }
+
+    @Override
+    public Optional<Integer> getInt() {
+        String name = this.getFieldName(Integer.class);
+        return this.getInt(name);
+    }
+
+    @Override
+    public void setInt(int value) {
+        String name = this.getFieldName(Integer.class);
+        this.setInt(name, value);
+    }
+
+    @Override
+    public Optional<Long> getLong() {
+        String name = this.getFieldName(Long.class);
+        return this.getLong(name);
+    }
+
+    @Override
+    public void setLong(long value) {
+        String name = this.getFieldName(Long.class);
+        this.setLong(name, value);
+    }
+
+    @Override
+    public Optional<Float> getFloat() {
+        String name = this.getFieldName(Float.class);
+        return this.getFloat(name);
+    }
+
+    @Override
+    public void setFloat(float value) {
+        String name = this.getFieldName(Float.class);
+        this.setFloat(name, value);
+    }
+
+    @Override
+    public Optional<Double> getDouble() {
+        String name = this.getFieldName(Double.class);
+        return this.getDouble(name);
+    }
+
+    @Override
+    public void setDouble(double value) {
+        String name = this.getFieldName(Double.class);
+        this.setDouble(name, value);
+    }
+
+    @Override
+    public Optional<Character> getChar() {
+        String name = this.getFieldName(Character.class);
+        return this.getChar(name);
+    }
+
+    @Override
+    public void setChar(char value) {
+        String name = this.getFieldName(Character.class);
+        this.setChar(name, value);
+    }
+
+    @Override
+    public Optional<String> getString() {
+        String name = this.getFieldName(String.class);
+        return this.getString(name);
+    }
+
+    @Override
+    public void setString(@NotNull String value) {
+        String name = this.getFieldName(String.class);
+        this.setString(name, value);
+    }
+
+    @Override
+    public Optional<Boolean> getBoolean() {
+        String name = this.getFieldName(Boolean.class);
+        return this.getBoolean(name);
+    }
+
+    @Override
+    public void setBoolean(boolean value) {
+        String name = this.getFieldName(Boolean.class);
+        this.setBoolean(name, value);
+    }
+
+    @Override
+    public <T> Optional<T[]> getArray(@NotNull Class<T> classOfT) {
+        String name = this.getFieldName(classOfT);
+        return this.getArray(name, classOfT);
+    }
+
+    @Override
+    public <T> void setArray(T @NotNull [] array) {
+        String name = this.getFieldName(array.getClass());
+        this.setArray(name, array);
+    }
+
+    @Override
+    public <T extends Enum<T>> Optional<T> getEnum(@NotNull Class<? extends Enum<?>> classOfT) {
+        String name = this.getFieldName(classOfT);
+        return this.getEnum(name, classOfT);
+    }
+
+    @Override
+    public <T extends Enum<T>> void setEnum(@NotNull T value) {
+        String name = this.getFieldName(value.getClass());
+        this.setEnum(name, value);
+    }
+
+    @Override
+    public <T extends SerializableObject> Optional<T> getSerializable(Class<T> classOfT) {
+        String name = this.getFieldName(classOfT);
+        return this.getSerializable(name, classOfT);
+    }
+
+    @Override
+    public void setSerializable(@NotNull SerializableObject value) {
+        String name = this.getFieldName(value.getClass());
+        this.setSerializable(name, value);
+    }
+
+    @Override
+    public Optional<SerializableObject> getNull() {
+        String name = this.getFieldName(Class.class);
+        return this.getNull(name);
+    }
+
+    @Override
+    public void setNull() {
+        this.setNull(this.getFieldName(Class.class));
+    }
+
+    @Override
+    public boolean isNextNull(@NotNull Class<?> type) {
+        if(type.isPrimitive())
+            type = ClassUtils.primitiveToWrapper(type);
+
+        String name = this.getFieldName(type);
+        return this.isNextNull(name, type);
+    }
+
+    @Override
+    public Optional<SerializedObject> get() {
+        String name = this.getFieldName(SerializedObject.class);
+        return this.get(name);
+    }
+
+    @Override
+    public void set(@NotNull SerializedObject value) {
+        String name = this.getFieldName(SerializedObject.class);
+        this.set(name, value);
+    }
+
+    @Override
+    public Optional<Collection<Integer>> getIntList() {
+        String name = this.getFieldName(Collection.class);
+        return this.getIntList(name);
+    }
+
+    @Override
+    public void setIntList(@NotNull Collection<Integer> value) {
+        String name = this.getFieldName(Collection.class);
+        this.setIntList(name, value);
+    }
+
+    @Override
+    public Optional<Collection<Long>> getLongList() {
+        String name = this.getFieldName(Collection.class);
+        return this.getLongList(name);
+    }
+
+    @Override
+    public void setLongList(@NotNull Collection<Long> value) {
+        String name = this.getFieldName(Collection.class);
+        this.setLongList(name, value);
+    }
+
+    @Override
+    public Optional<Collection<Double>> getDoubleList() {
+        String name = this.getFieldName(Collection.class);
+        return this.getDoubleList(name);
+    }
+
+    @Override
+    public void setDoubleList(@NotNull Collection<Double> value) {
+        String name = this.getFieldName(Collection.class);
+        this.setDoubleList(name, value);
+    }
+
+    @Override
+    public Optional<Collection<Byte>> getByteList() {
+        String name = this.getFieldName(Collection.class);
+        return this.getByteList(name);
+    }
+
+    @Override
+    public void setByteList(@NotNull Collection<Byte> value) {
+        String name = this.getFieldName(Collection.class);
+        this.setByteList(name, value);
+    }
+
+    @Override
+    public Optional<Collection<String>> getStringList() {
+        String name = this.getFieldName(Collection.class);
+        return this.getStringList(name);
+    }
+
+    @Override
+    public void setStringList(@NotNull Collection<String> value) {
+        String name = this.getFieldName(Collection.class);
+        this.setStringList(name, value);
+    }
+
+    @Override
+    public <T> Optional<T[]> getArray(@NotNull String name, @NotNull Class<T> classOfT) {
+        return this.getArrayHelper(name, classOfT);
+    }
+
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> void setArray(@NotNull String name, T @NotNull [] array) {
+        if(array[0] == null)
+            throw new SerializationException("Null value inside array");
+
+        Class<T> elementType = (Class<T>) array[0].getClass(); //never primitive always wrapper
+        this.setArray(name, array, elementType);
+    }
+
+    @Override
+    public Optional<Collection<SerializableObject>> getList(Class<? extends SerializableObject> clazz) {
+        String name = this.getFieldName(Collection.class);
+        return this.getList(name, clazz);
+    }
+
+    @Override
+    public void setList(@NotNull Collection<? extends SerializableObject> value) {
+        String name = this.getFieldName(Collection.class);
+        this.setList(name, value);
+    }
+
+    @Override
+    public <K, V> Optional<Map<K, V>> getMap(@NotNull Class<K> keyClass, @NotNull Class<V> valueClass) {
+        String name = this.getFieldName(Collection.class);
+        return this.getMap(name, keyClass, valueClass);
+    }
+
+    @Override
+    public <K, V> void setMap(@NotNull Map<K, V> value) {
+        String name = this.getFieldName(Collection.class);
+        this.setMap(name, value);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <K, V> Optional<Map<K, V>> getMap(@NotNull String name, @NotNull Class<K> keyClass, @NotNull Class<V> valueClass) {
+        var listOpt = this.getList(name, TupleSerializable.class);
+        if(listOpt.isEmpty())
+            return Optional.empty();
+
+        Map<K, V> map = new HashMap<>();
+        for(var e : listOpt.get()){
+            if(e instanceof TupleSerializable tuple){
+                Object key = tuple.getKey(SerializableType.JSON, keyClass).orElseThrow();
+                Object value = tuple.getValue(SerializableType.JSON, valueClass).orElseThrow();
+                map.put((K) key, (V) value);
+            }else{
+                return Optional.empty();
+            }
+        }
+
+        return Optional.of(map);
+    }
+
+    @Override
+    public <K, V> void setMap(@NotNull String name, @NotNull Map<K, V> value) {
+        List<TupleSerializable> list = new ArrayList<>();
+        for(var entrySet : value.entrySet()){
+            var ser = new TupleSerializable(SerializableType.JSON, entrySet.getKey(), entrySet.getValue());
+            list.add(ser);
+        }
+
+        this.setList(name, list);
     }
 
     /**

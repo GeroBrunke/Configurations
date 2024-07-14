@@ -3,7 +3,6 @@ package net.configuration.serializable.impl.types;
 import com.google.gson.*;
 import net.configuration.serializable.api.*;
 import net.configuration.serializable.impl.NullSerializable;
-import net.configuration.serializable.impl.TupleSerializable;
 import org.apache.commons.lang3.ClassUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,6 +18,7 @@ import java.util.logging.Logger;
 public class JsonSerializedObject extends AbstractSerializedObject{
 
     @NotNull private final JsonObject data;
+    @NotNull protected final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     @SuppressWarnings("unused") //called via reflection API
     public JsonSerializedObject(){
@@ -45,7 +45,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
     public JsonSerializedObject(@NotNull Class<?> clazz, @NotNull Logger warnLog, boolean printWarnings) {
         super(clazz, warnLog, printWarnings);
 
-        this.loadClassFields();
         this.data = new JsonObject();
     }
 
@@ -58,39 +57,15 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         return Optional.empty();
     }
 
-    @Override
-    public Optional<Byte> getByte() {
-        String name = this.getFieldName(Byte.class);
-        if(this.data.has(name)){
-            return Optional.of(this.data.get(name).getAsByte());
-        }
-
-        return Optional.empty();
-    }
 
     @Override
     public void setByte(@NotNull String name, byte value) {
         this.data.addProperty(name, value);
     }
 
-    @Override
-    public void setByte(byte value) {
-        String name = this.getFieldName(Byte.class);
-        this.data.addProperty(name, value);
-    }
 
     @Override
     public Optional<Short> getShort(@NotNull String name) {
-        if(this.data.has(name)){
-            return Optional.of(this.data.get(name).getAsShort());
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Short> getShort() {
-        String name = this.getFieldName(Byte.class);
         if(this.data.has(name)){
             return Optional.of(this.data.get(name).getAsShort());
         }
@@ -103,24 +78,9 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         this.data.addProperty(name, value);
     }
 
-    @Override
-    public void setShort(short value) {
-        String name = this.getFieldName(Byte.class);
-        this.data.addProperty(name, value);
-    }
 
     @Override
     public Optional<Integer> getInt(@NotNull String name) {
-        if(this.data.has(name)){
-            return Optional.of(this.data.get(name).getAsInt());
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Integer> getInt() {
-        String name = this.getFieldName(Byte.class);
         if(this.data.has(name)){
             return Optional.of(this.data.get(name).getAsInt());
         }
@@ -133,24 +93,9 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         this.data.addProperty(name, value);
     }
 
-    @Override
-    public void setInt(int value) {
-        String name = this.getFieldName(Byte.class);
-        this.data.addProperty(name, value);
-    }
 
     @Override
     public Optional<Long> getLong(@NotNull String name) {
-        if(this.data.has(name)){
-            return Optional.of(this.data.get(name).getAsLong());
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Long> getLong() {
-        String name = this.getFieldName(Byte.class);
         if(this.data.has(name)){
             return Optional.of(this.data.get(name).getAsLong());
         }
@@ -163,11 +108,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         this.data.addProperty(name, value);
     }
 
-    @Override
-    public void setLong(long value) {
-        String name = this.getFieldName(Byte.class);
-        this.data.addProperty(name, value);
-    }
 
     @Override
     public Optional<Float> getFloat(@NotNull String name) {
@@ -178,26 +118,12 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         return Optional.empty();
     }
 
-    @Override
-    public Optional<Float> getFloat() {
-        String name = this.getFieldName(Byte.class);
-        if(this.data.has(name)){
-            return Optional.of(this.data.get(name).getAsFloat());
-        }
-
-        return Optional.empty();
-    }
 
     @Override
     public void setFloat(@NotNull String name, float value) {
         this.data.addProperty(name, value);
     }
 
-    @Override
-    public void setFloat(float value) {
-        String name = this.getFieldName(Byte.class);
-        this.data.addProperty(name, value);
-    }
 
     @Override
     public Optional<Double> getDouble(@NotNull String name) {
@@ -208,26 +134,12 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         return Optional.empty();
     }
 
-    @Override
-    public Optional<Double> getDouble() {
-        String name = this.getFieldName(Byte.class);
-        if(this.data.has(name)){
-            return Optional.of(this.data.get(name).getAsDouble());
-        }
-
-        return Optional.empty();
-    }
 
     @Override
     public void setDouble(@NotNull String name, double value) {
         this.data.addProperty(name, value);
     }
 
-    @Override
-    public void setDouble(double value) {
-        String name = this.getFieldName(Byte.class);
-        this.data.addProperty(name, value);
-    }
 
     @Override
     public Optional<Character> getChar(@NotNull String name) {
@@ -238,39 +150,15 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         return Optional.empty();
     }
 
-    @Override
-    public Optional<Character> getChar() {
-        String name = this.getFieldName(Byte.class);
-        if(this.data.has(name)){
-            return Optional.of(this.data.get(name).getAsString().charAt(0));
-        }
-
-        return Optional.empty();
-    }
 
     @Override
     public void setChar(@NotNull String name, char value) {
         this.data.addProperty(name, value);
     }
 
-    @Override
-    public void setChar(char value) {
-        String name = this.getFieldName(Byte.class);
-        this.data.addProperty(name, value);
-    }
 
     @Override
     public Optional<String> getString(@NotNull String name) {
-        if(this.data.has(name)){
-            return Optional.of(this.data.get(name).getAsString());
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<String> getString() {
-        String name = this.getFieldName(Byte.class);
         if(this.data.has(name)){
             return Optional.of(this.data.get(name).getAsString());
         }
@@ -283,24 +171,9 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         this.data.addProperty(name, value);
     }
 
-    @Override
-    public void setString(@NotNull String value) {
-        String name = this.getFieldName(Byte.class);
-        this.data.addProperty(name, value);
-    }
 
     @Override
     public Optional<Boolean> getBoolean(@NotNull String name) {
-        if(this.data.has(name)){
-            return Optional.of(this.data.get(name).getAsBoolean());
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Boolean> getBoolean() {
-        String name = this.getFieldName(Byte.class);
         if(this.data.has(name)){
             return Optional.of(this.data.get(name).getAsBoolean());
         }
@@ -313,38 +186,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         this.data.addProperty(name, value);
     }
 
-    @Override
-    public void setBoolean(boolean value) {
-        String name = this.getFieldName(Byte.class);
-        this.data.addProperty(name, value);
-    }
-
-    @Override
-    public <T> Optional<T[]> getArray(@NotNull String name, @NotNull Class<T> classOfT) {
-        return this.getArrayHelper(name, classOfT);
-    }
-
-    @Override
-    public <T> Optional<T[]> getArray(@NotNull Class<T> classOfT) {
-        String name = this.getFieldName(Byte.class);
-        return this.getArray(name, classOfT);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> void setArray(@NotNull String name, T @NotNull [] array) {
-        if(array[0] == null)
-            throw new SerializationException("Null value inside array");
-
-        Class<T> elementType = (Class<T>) array[0].getClass(); //never primitive always wrapper
-        this.setArray(name, array, elementType);
-    }
-
-    @Override
-    public <T> void setArray(T @NotNull [] array) {
-        String name = this.getFieldName(Byte.class);
-        this.setArray(name, array);
-    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -362,21 +203,9 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         return Optional.empty();
     }
 
-    @Override
-    public <T extends Enum<T>> Optional<T> getEnum(@NotNull Class<? extends Enum<?>> classOfT) {
-        String name = this.getFieldName(classOfT);
-        return getEnum(name, classOfT);
-    }
-
 
     @Override
     public <T extends Enum<T>> void setEnum(@NotNull String name, @NotNull T value) {
-        this.data.addProperty(name, value.name());
-    }
-
-    @Override
-    public <T extends Enum<T>> void setEnum(@NotNull T value) {
-        String name = this.getFieldName(value.getClass());
         this.data.addProperty(name, value.name());
     }
 
@@ -406,22 +235,9 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         }
     }
 
-    @Override
-    public <T extends SerializableObject> Optional<T> getSerializable(Class<T> classOfT) {
-        String name = this.getFieldName(classOfT);
-        return this.getSerializable(name, classOfT);
-    }
 
     @Override
     public void setSerializable(@NotNull String name, @NotNull SerializableObject value) {
-        JsonSerializedObject nested = new JsonSerializedObject(value.getClass());
-        value.write(nested);
-        this.data.add(name, JsonParser.parseString(nested.toString()));
-    }
-
-    @Override
-    public void setSerializable(@NotNull SerializableObject value) {
-        String name = this.getFieldName(value.getClass());
         JsonSerializedObject nested = new JsonSerializedObject(value.getClass());
         value.write(nested);
         this.data.add(name, JsonParser.parseString(nested.toString()));
@@ -440,11 +256,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         return Optional.of(new JsonSerializedObject(jsonData));
     }
 
-    @Override
-    public Optional<SerializedObject> get() {
-        String name = this.getFieldName(SerializedObject.class);
-        return this.get(name);
-    }
 
     @Override
     public void set(@NotNull String name, @NotNull SerializedObject value) {
@@ -454,11 +265,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         this.data.add(name, JsonParser.parseString(value.toString()));
     }
 
-    @Override
-    public void set(@NotNull SerializedObject value) {
-        String name = this.getFieldName(SerializedObject.class);
-        this.set(name, value);
-    }
 
     @Override
     public Optional<SerializableObject> getNull(@NotNull String name) {
@@ -537,11 +343,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         return Optional.of(list);
     }
 
-    @Override
-    public Optional<Collection<Integer>> getIntList() {
-        String name = this.getFieldName(List.class);
-        return this.getIntList(name);
-    }
 
     @Override
     public void setIntList(@NotNull String name, @NotNull Collection<Integer> value) {
@@ -562,11 +363,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         this.data.add(name, list);
     }
 
-    @Override
-    public void setIntList(@NotNull Collection<Integer> value) {
-        String name = this.getFieldName(List.class);
-        this.setIntList(name, value);
-    }
 
     @Override
     public Optional<Collection<Long>> getLongList(@NotNull String name) {
@@ -583,12 +379,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
             list.add(jsonData.get(i).getAsLong());
         }
         return Optional.of(list);
-    }
-
-    @Override
-    public Optional<Collection<Long>> getLongList() {
-        String name = this.getFieldName(List.class);
-        return this.getLongList(name);
     }
 
     @Override
@@ -611,12 +401,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public void setLongList(@NotNull Collection<Long> value) {
-        String name = this.getFieldName(List.class);
-        this.setLongList(name, value);
-    }
-
-    @Override
     public Optional<Collection<Double>> getDoubleList(@NotNull String name) {
         if(!this.data.has(name))
             return Optional.empty();
@@ -633,11 +417,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         return Optional.of(list);
     }
 
-    @Override
-    public Optional<Collection<Double>> getDoubleList() {
-        String name = this.getFieldName(List.class);
-        return this.getDoubleList(name);
-    }
 
     @Override
     public void setDoubleList(@NotNull String name, @NotNull Collection<Double> value) {
@@ -659,12 +438,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public void setDoubleList(@NotNull Collection<Double> value) {
-        String name = this.getFieldName(List.class);
-        this.setDoubleList(name, value);
-    }
-
-    @Override
     public Optional<Collection<Byte>> getByteList(@NotNull String name) {
         if(!this.data.has(name))
             return Optional.empty();
@@ -679,12 +452,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
             list.add(jsonData.get(i).getAsByte());
         }
         return Optional.of(list);
-    }
-
-    @Override
-    public Optional<Collection<Byte>> getByteList() {
-        String name = this.getFieldName(List.class);
-        return this.getByteList(name);
     }
 
     @Override
@@ -706,11 +473,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         this.data.add(name, list);
     }
 
-    @Override
-    public void setByteList(@NotNull Collection<Byte> value) {
-        String name = this.getFieldName(List.class);
-        this.setByteList(name, value);
-    }
 
     @Override
     public Optional<Collection<String>> getStringList(@NotNull String name) {
@@ -729,11 +491,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         return Optional.of(list);
     }
 
-    @Override
-    public Optional<Collection<String>> getStringList() {
-        String name = this.getFieldName(List.class);
-        return this.getStringList(name);
-    }
 
     @Override
     public void setStringList(@NotNull String name, @NotNull Collection<String> value) {
@@ -754,11 +511,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         this.data.add(name, list);
     }
 
-    @Override
-    public void setStringList(@NotNull Collection<String> value) {
-        String name = this.getFieldName(List.class);
-        this.setStringList(name, value);
-    }
 
     @Override
     public Optional<Collection<SerializableObject>> getList(@NotNull String name, Class<? extends SerializableObject> clazz) {
@@ -788,12 +540,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public Optional<Collection<SerializableObject>> getList(Class<? extends SerializableObject> clazz) {
-        String name = this.getFieldName(List.class);
-        return this.getList(name, clazz);
-    }
-
-    @Override
     public void setList(@NotNull String name, @NotNull Collection<? extends SerializableObject> value) {
         Optional<Field> fieldOpt = this.getField(name);
         if(fieldOpt.isPresent()){
@@ -815,55 +561,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
 
     }
 
-    @Override
-    public void setList(@NotNull Collection<? extends SerializableObject> value) {
-        String name = this.getFieldName(List.class);
-        this.setList(name, value);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <K,V> Optional<Map<K, V>> getMap(@NotNull String name, @NotNull Class<K> keyClass, @NotNull Class<V> valueClass) {
-        var listOpt = this.getList(name, TupleSerializable.class);
-        if(listOpt.isEmpty())
-            return Optional.empty();
-
-        Map<K, V> map = new HashMap<>();
-        for(var e : listOpt.get()){
-            if(e instanceof TupleSerializable tuple){
-                Object key = tuple.getKey(SerializableType.JSON, keyClass).orElseThrow();
-                Object value = tuple.getValue(SerializableType.JSON, valueClass).orElseThrow();
-                map.put((K) key, (V) value);
-            }else{
-                return Optional.empty();
-            }
-        }
-
-        return Optional.of(map);
-    }
-
-    @Override
-    public <K,V> Optional<Map<K, V>> getMap(@NotNull Class<K> keyClass, @NotNull Class<V> valueClass) {
-        String name = this.getFieldName(Map.class);
-        return this.getMap(name, keyClass, valueClass);
-    }
-
-    @Override
-    public <K,V> void setMap(@NotNull String name, @NotNull Map<K, V> value) {
-        List<TupleSerializable> list = new ArrayList<>();
-        for(var entrySet : value.entrySet()){
-            var ser = new TupleSerializable(SerializableType.JSON, entrySet.getKey(), entrySet.getValue());
-            list.add(ser);
-        }
-
-        this.setList(name, list);
-    }
-
-    @Override
-    public <K,V> void setMap(@NotNull Map<K, V> value) {
-        String name = this.getFieldName(Map.class);
-        this.setMap(name, value);
-    }
 
     @Override
     public byte @NotNull [] toByteArray() {
@@ -872,7 +569,7 @@ public class JsonSerializedObject extends AbstractSerializedObject{
 
     @Override
     public String toString() {
-        return data.toString();
+        return this.gson.toJson(this.data);
     }
 
     @Override

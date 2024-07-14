@@ -1,9 +1,6 @@
 package net.configuration.serializable.impl;
 
-import net.configuration.serializable.api.Creator;
-import net.configuration.serializable.api.SerializableObject;
-import net.configuration.serializable.api.SerializationAPI;
-import net.configuration.serializable.api.SerializedObject;
+import net.configuration.serializable.api.*;
 import org.jetbrains.annotations.NotNull;
 
 public class GenericSerializable<T> implements SerializableObject  {
@@ -12,20 +9,35 @@ public class GenericSerializable<T> implements SerializableObject  {
     @SuppressWarnings({"unused","rawtypes"})
     private static final Creator<GenericSerializable> CREATOR = new SimpleCreatorImpl<>(GenericSerializable.class);
 
-    public GenericSerializable(@NotNull Class<T> classOfT){
+    protected T value; //the isValid check in the constructor ensures that the value is serializable
+    protected String classOfT;
 
+    public GenericSerializable(@NotNull T value){
+        if(ObjectSerializable.isInvalid(value))
+            throw new SerializationException("Cannot serialize generic value " + value);
+
+        this.classOfT = value.getClass().getName();
+        this.value = value;
     }
 
     @Override
     public void write(@NotNull SerializedObject dest) {
-
+        dest.setString("class", classOfT);
+        dest.setObject("value", value);
     }
 
     @SuppressWarnings("unused") //called via reflection API
-    private GenericSerializable(){} //Hide implicit
+    protected GenericSerializable(){} //Hide implicit
 
     @Override
-    public @NotNull SerializableObject read(@NotNull SerializedObject src) {
+    @SuppressWarnings("unchecked")
+    public @NotNull GenericSerializable<T> read(@NotNull SerializedObject src) {
+        try{
+            this.classOfT = src.getString("class").orElse(null);
+            this.value = (T) src.getObject("value", Class.forName(classOfT)).orElse(null);
+        }catch(ClassNotFoundException e){
+            e.printStackTrace();
+        }
         return this;
     }
 }

@@ -81,16 +81,22 @@ class TestSerializedObject {
         //read again
         Optional<SerializedObject> aOpt1 = obj.get();
         assertTrue(aOpt1.isPresent());
-        assertEquals(atest, creator.read(aOpt1.get()));
+        SerializedObject as = aOpt1.get();
+        as.setForClass(TestObject.class);
+        assertEquals(atest, creator.read(as));
 
         Optional<SerializedObject> bOpt = obj.get("b");
         assertTrue(bOpt.isPresent());
-        assertEquals(btest, creator.read(bOpt.get()));
+        SerializedObject ab = bOpt.get();
+        ab.setForClass(TestObject.class);
+        assertEquals(btest, creator.read(ab));
 
 
         Optional<SerializedObject> aOpt2 = obj.get();
         assertTrue(aOpt2.isPresent());
-        assertEquals(atest, creator.read(aOpt2.get()));
+        SerializedObject as2 = aOpt2.get();
+        as2.setForClass(TestObject.class);
+        assertEquals(atest, creator.read(as2));
 
     }
 
