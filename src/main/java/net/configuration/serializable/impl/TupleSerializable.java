@@ -1,13 +1,15 @@
 package net.configuration.serializable.impl;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.configuration.serializable.api.*;
+import net.configuration.serializable.impl.types.JsonSerializedObject;
+import net.configuration.serializable.impl.types.PropertiesSerializedObject;
+import net.configuration.serializable.impl.types.YamlSerializedObject;
 import org.apache.commons.lang3.ClassUtils;
 import org.jetbrains.annotations.NotNull;
+import org.simpleyaml.configuration.file.YamlConfiguration;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
@@ -118,13 +120,19 @@ public class TupleSerializable implements SerializableObject {
     }
 
     private SerializedObject create(@NotNull SerializableType type, @NotNull Class<?> clazz, @NotNull String data)
-            throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+            throws IOException {
 
         switch(type){
             case JSON -> {
-                Constructor<? extends SerializedObject> con = type.getImplClass().getDeclaredConstructor(JsonObject.class, Class.class);
-                con.setAccessible(true);
-                return con.newInstance(JsonParser.parseString(data).getAsJsonObject(), clazz);
+                return new JsonSerializedObject(JsonParser.parseString(data).getAsJsonObject(), clazz);
+            }
+
+            case YAML -> {
+                return new YamlSerializedObject(YamlConfiguration.loadConfigurationFromString(data));
+            }
+
+            case PROPERTIES -> {
+                return new PropertiesSerializedObject(clazz, data);
             }
 
             default -> throw new UnsupportedOperationException("Implement me");

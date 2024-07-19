@@ -64,9 +64,6 @@ public enum SerializableType {
         return fileExtension;
     }
 
-    public @NotNull Class<? extends SerializedObject> getImplClass() {
-        return implClass;
-    }
 
     public static SerializableType fromImplementationClass(Class<?> implClass){
         for(SerializableType type : values()){

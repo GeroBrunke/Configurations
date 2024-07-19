@@ -24,6 +24,7 @@ public abstract class AbstractSerializedObject implements SerializedObject {
     protected boolean printWarnings = false;
 
     protected String ymlPrefix;
+    protected String xmlPrefix;
 
     //store all field names for a given type in the class
     @NotNull protected final BiMap<Class<?>, List<String>> classFields = HashBiMap.create();
@@ -57,6 +58,7 @@ public abstract class AbstractSerializedObject implements SerializedObject {
     @Override
     public <T extends SerializableObject> void setForClass(@NotNull Class<T> clazz) {
         this.clazz = clazz;
+        this.xmlPrefix = clazz.getSimpleName() + "_";
         this.ymlPrefix = clazz.getSimpleName() + ".";
         this.loadClassFields();
     }
@@ -357,8 +359,9 @@ public abstract class AbstractSerializedObject implements SerializedObject {
         Map<K, V> map = new HashMap<>();
         for(var e : listOpt.get()){
             if(e instanceof TupleSerializable tuple){
-                Object key = tuple.getKey(SerializableType.JSON, keyClass).orElseThrow();
-                Object value = tuple.getValue(SerializableType.JSON, valueClass).orElseThrow();
+                SerializableType type = Objects.requireNonNull(SerializableType.fromImplementationClass(this.getClass()));
+                Object key = tuple.getKey(type, keyClass).orElseThrow();
+                Object value = tuple.getValue(type, valueClass).orElseThrow();
                 map.put((K) key, (V) value);
             }else{
                 return Optional.empty();
@@ -371,8 +374,9 @@ public abstract class AbstractSerializedObject implements SerializedObject {
     @Override
     public <K, V> void setMap(@NotNull String name, @NotNull Map<K, V> value) {
         List<TupleSerializable> list = new ArrayList<>();
+        SerializableType type = Objects.requireNonNull(SerializableType.fromImplementationClass(this.getClass()));
         for(var entrySet : value.entrySet()){
-            var ser = new TupleSerializable(SerializableType.JSON, entrySet.getKey(), entrySet.getValue());
+            var ser = new TupleSerializable(type, entrySet.getKey(), entrySet.getValue());
             list.add(ser);
         }
 
@@ -469,23 +473,6 @@ public abstract class AbstractSerializedObject implements SerializedObject {
         return fieldName;
     }
 
-    /**
-     * Check if a field for the given type is or will be serialized in the current class.
-     *
-     * @param forType The type to check.
-     * @return If such a field exists.
-     */
-    protected boolean containsField(@NotNull Class<?> forType){
-        try{
-            getFieldName(forType);
-            //field was found so reset field pointer from above method call
-            int ptr = this.fieldPointer.remove(forType);
-            this.fieldPointer.put(forType, ptr-1);
-            return true;
-        }catch(SerializationException e){
-            return false;
-        }
-    }
 
     /**
      * Deserializes the array of given type mapped to the name from this serialized object.

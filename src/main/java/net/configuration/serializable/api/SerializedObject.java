@@ -916,7 +916,7 @@ public interface SerializedObject extends ObjectSerializer{
                 case PROPERTIES -> {
                     Properties prop = new Properties();
                     prop.load(new StringReader(strData));
-                    obj = new PropertiesSerializedObject(prop, forClass);
+                    obj = new PropertiesSerializedObject("", prop, forClass);
                 }
 
                 case XML -> {

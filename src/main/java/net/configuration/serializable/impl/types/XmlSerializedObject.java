@@ -1,62 +1,71 @@
 package net.configuration.serializable.impl.types;
 
 import net.configuration.serializable.api.SerializableObject;
+import net.configuration.serializable.api.SerializationException;
 import net.configuration.serializable.api.SerializedObject;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
 public class XmlSerializedObject extends AbstractSerializedObject{
 
+    private final Document data;
+    protected static final String NO_UNIQUE_PATH = "There are mor than 1 elements at path ";
+
     public XmlSerializedObject(@NotNull Class<?> clazz) {
         super(clazz);
+        this.xmlPrefix = clazz.getSimpleName();
+        this.data = this.loadNewDocument();
     }
 
     public XmlSerializedObject(@NotNull Document document, @NotNull Class<?> forClass){
-
+        super(forClass);
+        this.data = document;
+        this.xmlPrefix = forClass.getSimpleName();
     }
 
     public XmlSerializedObject(@NotNull Class<?> clazz, @NotNull Logger warnLog, boolean printWarnings) {
         super(clazz, warnLog, printWarnings);
+
+        this.data = this.loadNewDocument();
+        this.xmlPrefix = clazz.getSimpleName();
     }
 
     @SuppressWarnings("unused")
-    protected XmlSerializedObject(){
+    public XmlSerializedObject(){
         super();
+        this.xmlPrefix = "dummy-";
+        this.data = this.loadNewDocument();
+    }
+
+    public XmlSerializedObject(Document data){
+        this.data = data;
+        this.xmlPrefix = "dummy-";
     }
 
     @Override
     public Optional<Byte> getByte(@NotNull String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Byte> getByte() {
-        return Optional.empty();
+        return Optional.of(Byte.parseByte(this.readFromUniquePath(xmlPrefix + name)));
     }
 
     @Override
     public void setByte(@NotNull String name, byte value) {
-
-    }
-
-    @Override
-    public void setByte(byte value) {
-
+        this.updateUniquePathValue(this.xmlPrefix + name, value);
     }
 
     @Override
     public Optional<Short> getShort(@NotNull String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Short> getShort() {
         return Optional.empty();
     }
 
@@ -66,17 +75,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public void setShort(short value) {
-
-    }
-
-    @Override
     public Optional<Integer> getInt(@NotNull String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Integer> getInt() {
         return Optional.empty();
     }
 
@@ -86,17 +85,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public void setInt(int value) {
-
-    }
-
-    @Override
     public Optional<Long> getLong(@NotNull String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Long> getLong() {
         return Optional.empty();
     }
 
@@ -106,17 +95,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public void setLong(long value) {
-
-    }
-
-    @Override
     public Optional<Float> getFloat(@NotNull String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Float> getFloat() {
         return Optional.empty();
     }
 
@@ -126,17 +105,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public void setFloat(float value) {
-
-    }
-
-    @Override
     public Optional<Double> getDouble(@NotNull String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Double> getDouble() {
         return Optional.empty();
     }
 
@@ -146,17 +115,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public void setDouble(double value) {
-
-    }
-
-    @Override
     public Optional<Character> getChar(@NotNull String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Character> getChar() {
         return Optional.empty();
     }
 
@@ -166,17 +125,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public void setChar(char value) {
-
-    }
-
-    @Override
     public Optional<String> getString(@NotNull String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<String> getString() {
         return Optional.empty();
     }
 
@@ -186,17 +135,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public void setString(@NotNull String value) {
-
-    }
-
-    @Override
     public Optional<Boolean> getBoolean(@NotNull String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Boolean> getBoolean() {
         return Optional.empty();
     }
 
@@ -206,48 +145,12 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public void setBoolean(boolean value) {
-
-    }
-
-    @Override
-    public <T> Optional<T[]> getArray(@NotNull String name, @NotNull Class<T> classOfT) {
-        return Optional.empty();
-    }
-
-    @Override
-    public <T> Optional<T[]> getArray(@NotNull Class<T> classOfT) {
-        return Optional.empty();
-    }
-
-    @Override
-    public <T> void setArray(@NotNull String name, T @NotNull [] array) {
-
-    }
-
-    @Override
-    public <T> void setArray(T @NotNull [] array) {
-
-    }
-
-    @Override
     public <T extends Enum<T>> Optional<T> getEnum(@NotNull String name, @NotNull Class<? extends Enum<?>> classOfT) {
         return Optional.empty();
     }
 
     @Override
-    public <T extends Enum<T>> Optional<T> getEnum(@NotNull Class<? extends Enum<?>> classOfT) {
-        return Optional.empty();
-    }
-
-
-    @Override
     public <T extends Enum<T>> void setEnum(@NotNull String name, @NotNull T value) {
-
-    }
-
-    @Override
-    public <T extends Enum<T>> void setEnum(@NotNull T value) {
 
     }
 
@@ -257,17 +160,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public <T extends SerializableObject> Optional<T> getSerializable(Class<T> classOfT) {
-        return Optional.empty();
-    }
-
-    @Override
     public void setSerializable(@NotNull String name, @NotNull SerializableObject value) {
-
-    }
-
-    @Override
-    public void setSerializable(@NotNull SerializableObject value) {
 
     }
 
@@ -277,17 +170,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public Optional<SerializedObject> get() {
-        return Optional.empty();
-    }
-
-    @Override
     public void set(@NotNull String name, @NotNull SerializedObject value) {
-
-    }
-
-    @Override
-    public void set(@NotNull SerializedObject value) {
 
     }
 
@@ -297,23 +180,8 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public Optional<SerializableObject> getNull() {
-        return Optional.empty();
-    }
-
-    @Override
     public void setNull(@NotNull String name) {
 
-    }
-
-    @Override
-    public void setNull() {
-
-    }
-
-    @Override
-    public boolean isNextNull(@NotNull Class<?> type) {
-        return false;
     }
 
     @Override
@@ -327,17 +195,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public Optional<Collection<Integer>> getIntList() {
-        return Optional.empty();
-    }
-
-    @Override
     public void setIntList(@NotNull String name, @NotNull Collection<Integer> value) {
-
-    }
-
-    @Override
-    public void setIntList(@NotNull Collection<Integer> value) {
 
     }
 
@@ -347,17 +205,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public Optional<Collection<Long>> getLongList() {
-        return Optional.empty();
-    }
-
-    @Override
     public void setLongList(@NotNull String name, @NotNull Collection<Long> value) {
-
-    }
-
-    @Override
-    public void setLongList(@NotNull Collection<Long> value) {
 
     }
 
@@ -367,17 +215,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public Optional<Collection<Double>> getDoubleList() {
-        return Optional.empty();
-    }
-
-    @Override
     public void setDoubleList(@NotNull String name, @NotNull Collection<Double> value) {
-
-    }
-
-    @Override
-    public void setDoubleList(@NotNull Collection<Double> value) {
 
     }
 
@@ -387,17 +225,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public Optional<Collection<Byte>> getByteList() {
-        return Optional.empty();
-    }
-
-    @Override
     public void setByteList(@NotNull String name, @NotNull Collection<Byte> value) {
-
-    }
-
-    @Override
-    public void setByteList(@NotNull Collection<Byte> value) {
 
     }
 
@@ -407,17 +235,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public Optional<Collection<String>> getStringList() {
-        return Optional.empty();
-    }
-
-    @Override
     public void setStringList(@NotNull String name, @NotNull Collection<String> value) {
-
-    }
-
-    @Override
-    public void setStringList(@NotNull Collection<String> value) {
 
     }
 
@@ -427,37 +245,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public Optional<Collection<SerializableObject>> getList(Class<? extends SerializableObject> clazz) {
-        return Optional.empty();
-    }
-
-    @Override
     public void setList(@NotNull String name, @NotNull Collection<? extends SerializableObject> value) {
-
-    }
-
-    @Override
-    public void setList(@NotNull Collection<? extends SerializableObject> value) {
-
-    }
-
-    @Override
-    public <K, V> Optional<Map<K, V>> getMap(@NotNull String name, @NotNull Class<K> keyClass, @NotNull Class<V> valueClass) {
-        return Optional.empty();
-    }
-
-    @Override
-    public <K, V> Optional<Map<K, V>> getMap(@NotNull Class<K> keyClass, @NotNull Class<V> valueClass) {
-        return Optional.empty();
-    }
-
-    @Override
-    public <K, V> void setMap(@NotNull String name, @NotNull Map<K, V> value) {
-
-    }
-
-    @Override
-    public <K, V> void setMap(@NotNull Map<K, V> value) {
 
     }
 
@@ -475,4 +263,86 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     public Optional<Object> getRawObject(@NotNull String name, @NotNull Class<?> classOfT) {
         return Optional.empty();
     }
+
+    @NotNull
+    private Document loadNewDocument(){
+        try {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dbBuilder = dbFactory.newDocumentBuilder();
+            return dbBuilder.newDocument();
+
+        } catch (ParserConfigurationException e) {
+            throw new SerializationException(e);
+        }
+    }
+
+    /**
+     * Get the {@link Node} that is referenced by the given path.
+     *
+     * @param path A path to that object, that may contain child references.
+     * @return The underlying {@link Node} at the given path.
+     */
+    private Node getUniqueElementByTagName(String path){
+        if(path.contains(".")){
+            String[] sub = path.split("\\.");
+            NodeList currentList = this.data.getElementsByTagName(sub[0]);
+            if(currentList.getLength() > 0)
+                throw new IllegalArgumentException("Not a unique path: " + path);
+
+            Node current = currentList.item(0);
+            for(int i = 1; i < sub.length; i++){
+                Node item = currentList.item(0);
+                NodeList children = item.getChildNodes();
+                for(int j = 0; j < children.getLength(); j++){
+                    Node child = children.item(j);
+                    if(child.getNodeName().equals(sub[i])){
+                        currentList = child.getChildNodes();
+                        current = child;
+                        break;
+                    }
+                }
+            }
+            return current;
+
+        }else{
+            NodeList list = this.data.getElementsByTagName(path);
+            if(list.getLength() > 1)
+                throw new IllegalStateException(NO_UNIQUE_PATH + path);
+
+            return list.item(0);
+        }
+    }
+
+    /**
+     * Get the string value of the given element with unique tag {@code path}.
+     *
+     * @param path The unique tag name of the element.
+     * @return The content text value of the element.
+     */
+    private String readFromUniquePath(String path){
+        Node item = this.getUniqueElementByTagName(path);
+        if(item.getNodeType() == Node.ELEMENT_NODE){
+            Element elem = (Element) item;
+            return elem.getTextContent();
+        }
+
+        throw new IllegalStateException("Illegal node at path " + path);
+    }
+
+    private void updateUniquePathValue(String path, Object value){
+        Node item = this.getUniqueElementByTagName(path);
+        if(item == null){
+            //add new element
+            Element e = this.data.createElement(path);
+            e.setTextContent(value.toString());
+            this.data.appendChild(e);
+
+
+        }else if(item.getNodeType() == Node.ELEMENT_NODE){
+            Element elem = (Element) item;
+            elem.setTextContent(value.toString());
+        }
+
+    }
+
 }

@@ -48,7 +48,7 @@ public class YamlSerializedObject extends AbstractSerializedObject{
     public YamlSerializedObject(@NotNull YamlConfiguration config, @NotNull Class<?> forClass){
         super(forClass);
         this.data = config;
-        this.ymlPrefix = clazz.getSimpleName() + ".";
+        this.ymlPrefix = forClass.getSimpleName() + ".";
     }
 
     @SuppressWarnings("unused")
@@ -428,7 +428,70 @@ public class YamlSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Optional<Object> getRawObject(@NotNull String name, @NotNull Class<?> classOfT) {
+        if(!this.data.contains(this.ymlPrefix + name))
+            return Optional.empty();
+
+        String elem = this.data.get(this.ymlPrefix + name).toString();
+
+
+        if(elem.equals(NullSerializable.CODON))
+            return Optional.empty();
+
+        if(this.data.isConfigurationSection(this.ymlPrefix + name)){
+           try{
+               YamlSerializedObject obj = new YamlSerializedObject(YamlConfiguration.loadConfigurationFromString(this.data.getString(this.ymlPrefix + name)), classOfT);
+               var opt = obj.getSerializable((Class<? extends SerializableObject>) classOfT);
+               if(opt.isPresent())
+                   return Optional.of(opt.get());
+
+           }catch(Exception e){
+               e.printStackTrace();
+           }
+
+        }else if(elem.startsWith("[")){
+            throw new UnsupportedOperationException("Could not extract a list as a raw object.");
+
+        }else {
+            return Optional.ofNullable(this.extractPrimitive(elem, classOfT));
+        }
+
         return Optional.empty();
+    }
+
+    private Object extractPrimitive(@NotNull String value, @NotNull Class<?> clazz){
+        if(clazz.isPrimitive())
+            clazz = ClassUtils.primitiveToWrapper(clazz);
+
+        if(clazz == Boolean.class){
+            return Boolean.parseBoolean(value);
+
+        }else if(clazz == Byte.class){
+            return Byte.parseByte(value);
+
+        }else if(clazz == Short.class){
+            return Short.parseShort(value);
+
+        }else if(clazz == Integer.class){
+            return Integer.parseInt(value);
+
+        }else if(clazz == Long.class){
+            return Long.parseLong(value);
+
+        }else if(clazz == Float.class){
+            return Float.parseFloat(value);
+
+        }else if(clazz == Double.class){
+            return Double.parseDouble(value);
+
+        }else if(clazz == Character.class){
+            return value.charAt(0);
+
+        }else if(clazz == String.class){
+            return value;
+        }
+
+        return null;
     }
 }

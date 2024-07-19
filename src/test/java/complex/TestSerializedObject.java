@@ -49,11 +49,9 @@ class TestSerializedObject {
         obj.flush();
 
 
-        Creator<TestObject> creator = Creator.getCreator(TestObject.class);
-
         //read again
         assertEquals(TestObject.class, obj.getForClass().orElse(null));
-        TestObject read = creator.read(obj);
+        TestObject read = Creator.readDefault(obj, TestObject.class).orElse(null);
         assertEquals(a, read);
 
     }
