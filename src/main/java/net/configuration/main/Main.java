@@ -3,9 +3,7 @@ package net.configuration.main;
 public final class Main {
 
     /*
-    TODO: Add Byte
     TODO: Add XML
-    TODO: Add Text
 
 
     TODO: Add configurations

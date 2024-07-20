@@ -372,6 +372,112 @@ public abstract class AbstractSerializedObject implements SerializedObject {
     }
 
     @Override
+    public Optional<Collection<Integer>> getIntList(@NotNull String name) {
+        List<Integer> list = new ArrayList<>();
+        String listStr = this.getString(name).orElse("");
+        for(String elem : listStr.split(", ")){
+            int e = Integer.parseInt(elem);
+            list.add(e);
+        }
+
+        return Optional.of(list);
+    }
+
+    @Override
+    public void setIntList(@NotNull String name, @NotNull Collection<Integer> value) {
+        StringBuilder listStr = new StringBuilder();
+        for(int v : value){
+            listStr.append(", ").append(v);
+        }
+        listStr = new StringBuilder(listStr.substring(2));
+        this.setString(name, listStr.toString());
+    }
+
+    @Override
+    public Optional<Collection<Long>> getLongList(@NotNull String name) {
+        List<Long> list = new ArrayList<>();
+        String listStr = this.getString(name).orElse("");
+        for(String elem : listStr.split(", ")){
+            long e = Long.parseLong(elem);
+            list.add(e);
+        }
+
+        return Optional.of(list);
+    }
+
+    @Override
+    public void setLongList(@NotNull String name, @NotNull Collection<Long> value) {
+        StringBuilder listStr = new StringBuilder();
+        for(long v : value){
+            listStr.append(", ").append(v);
+        }
+        listStr = new StringBuilder(listStr.substring(2));
+        this.setString(name, listStr.toString());
+    }
+
+    @Override
+    public Optional<Collection<Double>> getDoubleList(@NotNull String name) {
+        List<Double> list = new ArrayList<>();
+        String listStr = this.getString(name).orElse("");
+        for(String elem : listStr.split(", ")){
+            double e = Double.parseDouble(elem);
+            list.add(e);
+        }
+
+        return Optional.of(list);
+    }
+
+    @Override
+    public void setDoubleList(@NotNull String name, @NotNull Collection<Double> value) {
+        StringBuilder listStr = new StringBuilder();
+        for(double v : value){
+            listStr.append(", ").append(v);
+        }
+        listStr = new StringBuilder(listStr.substring(2));
+        this.setString(name, listStr.toString());
+    }
+
+    @Override
+    public Optional<Collection<Byte>> getByteList(@NotNull String name) {
+        List<Byte> list = new ArrayList<>();
+        String listStr = this.getString(name).orElse("");
+        for(String elem : listStr.split(", ")){
+            byte e = Byte.parseByte(elem);
+            list.add(e);
+        }
+
+        return Optional.of(list);
+    }
+
+    @Override
+    public void setByteList(@NotNull String name, @NotNull Collection<Byte> value) {
+        StringBuilder listStr = new StringBuilder();
+        for(byte v : value){
+            listStr.append(", ").append(v);
+        }
+        listStr = new StringBuilder(listStr.substring(2));
+        this.setString(name, listStr.toString());
+    }
+
+    @Override
+    public Optional<Collection<String>> getStringList(@NotNull String name) {
+        String listStr = this.getString(name).orElse("");
+        List<String> list = new ArrayList<>(Arrays.asList(listStr.split(", ")));
+
+        return Optional.of(list);
+    }
+
+    @Override
+    public void setStringList(@NotNull String name, @NotNull Collection<String> value) {
+        StringBuilder listStr = new StringBuilder();
+        for(String v : value){
+            listStr.append(", ").append(v);
+        }
+        listStr = new StringBuilder(listStr.substring(2));
+        this.setString(name, listStr.toString());
+    }
+
+    @Override
     public <K, V> void setMap(@NotNull String name, @NotNull Map<K, V> value) {
         List<TupleSerializable> list = new ArrayList<>();
         SerializableType type = Objects.requireNonNull(SerializableType.fromImplementationClass(this.getClass()));
@@ -382,6 +488,8 @@ public abstract class AbstractSerializedObject implements SerializedObject {
 
         this.setList(name, list);
     }
+
+
 
     /**
      * Load all fields that should be serialized from the given class. By default, all fields that are not static,
@@ -717,6 +825,41 @@ public abstract class AbstractSerializedObject implements SerializedObject {
 
             this.setStringList(name, list);
         }
+    }
+
+    protected Object extractPrimitive(@NotNull String value, @NotNull Class<?> clazz){
+        if(clazz.isPrimitive())
+            clazz = ClassUtils.primitiveToWrapper(clazz);
+
+        if(clazz == Boolean.class){
+            return Boolean.parseBoolean(value);
+
+        }else if(clazz == Byte.class){
+            return Byte.parseByte(value);
+
+        }else if(clazz == Short.class){
+            return Short.parseShort(value);
+
+        }else if(clazz == Integer.class){
+            return Integer.parseInt(value);
+
+        }else if(clazz == Long.class){
+            return Long.parseLong(value);
+
+        }else if(clazz == Float.class){
+            return Float.parseFloat(value);
+
+        }else if(clazz == Double.class){
+            return Double.parseDouble(value);
+
+        }else if(clazz == Character.class){
+            return value.charAt(0);
+
+        }else if(clazz == String.class){
+            return value;
+        }
+
+        return null;
     }
 
 }

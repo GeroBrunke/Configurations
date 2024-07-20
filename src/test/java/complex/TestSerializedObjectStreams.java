@@ -20,6 +20,9 @@ class TestSerializedObjectStreams {
     void testStreamSerialization(SerializableType type) throws IOException {
         //write a complex object into a file stream and then deserialize it from the input stream
         File file = new File("deleteMe.file");
+        if(file.exists())
+            assertTrue(file.delete());
+
         assertTrue(file.createNewFile());
 
         TestObject a = new TestObject(1F);

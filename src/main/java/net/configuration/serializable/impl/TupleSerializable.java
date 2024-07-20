@@ -2,15 +2,14 @@ package net.configuration.serializable.impl;
 
 import com.google.gson.JsonParser;
 import net.configuration.serializable.api.*;
-import net.configuration.serializable.impl.types.JsonSerializedObject;
-import net.configuration.serializable.impl.types.PropertiesSerializedObject;
-import net.configuration.serializable.impl.types.YamlSerializedObject;
+import net.configuration.serializable.impl.types.*;
 import org.apache.commons.lang3.ClassUtils;
 import org.jetbrains.annotations.NotNull;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 import java.util.Optional;
 
 public class TupleSerializable implements SerializableObject {
@@ -133,6 +132,14 @@ public class TupleSerializable implements SerializableObject {
 
             case PROPERTIES -> {
                 return new PropertiesSerializedObject(clazz, data);
+            }
+
+            case BYTE -> {
+                return new ByteSerializedObject(ByteBuffer.wrap(ByteSerializedObject.createArrayFromString(data)), clazz);
+            }
+
+            case TEXT -> {
+                return new TextSerializedObject(data, clazz);
             }
 
             default -> throw new UnsupportedOperationException("Implement me");
