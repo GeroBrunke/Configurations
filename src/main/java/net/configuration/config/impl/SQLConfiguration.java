@@ -2,5 +2,5 @@ package net.configuration.config.impl;
 
 import net.configuration.config.Configuration;
 
-public class SQLConfiguration implements Configuration {
+public abstract class SQLConfiguration implements Configuration {
 }

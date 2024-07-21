@@ -6,6 +6,7 @@ import net.configuration.serializable.impl.SerializationHelper;
 import net.configuration.serializable.impl.types.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassUtils;
+import org.jdom2.input.DOMBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.w3c.dom.Document;
@@ -920,14 +921,12 @@ public interface SerializedObject extends ObjectSerializer{
                 }
 
                 case XML -> {
-                    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                    dbFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-                    dbFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-                    DocumentBuilder dbBuilder = dbFactory.newDocumentBuilder();
-                    Document document = dbBuilder.parse(new InputSource(new StringReader(strData)));
-                    document.getDocumentElement().normalize();
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                    DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+                    org.w3c.dom.Document w3cDocument = documentBuilder.parse(new InputSource(new StringReader(strData)));
 
-                    obj = new XmlSerializedObject(document, forClass);
+                    obj = new XmlSerializedObject(new DOMBuilder().build(w3cDocument), forClass);
                 }
             }
 

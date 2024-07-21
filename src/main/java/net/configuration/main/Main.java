@@ -4,6 +4,7 @@ public final class Main {
 
     /*
     TODO: Add XML
+    TODO: Object Storage Class
 
 
     TODO: Add configurations

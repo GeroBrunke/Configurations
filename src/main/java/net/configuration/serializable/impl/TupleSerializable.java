@@ -4,10 +4,15 @@ import com.google.gson.JsonParser;
 import net.configuration.serializable.api.*;
 import net.configuration.serializable.impl.types.*;
 import org.apache.commons.lang3.ClassUtils;
+import org.jdom2.input.DOMBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.simpleyaml.configuration.file.YamlConfiguration;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.Optional;
@@ -140,6 +145,19 @@ public class TupleSerializable implements SerializableObject {
 
             case TEXT -> {
                 return new TextSerializedObject(data, clazz);
+            }
+
+            case XML -> {
+                try{
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                    DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+                    org.w3c.dom.Document w3cDocument = documentBuilder.parse(new InputSource(new StringReader(data)));
+
+                    return new XmlSerializedObject(new DOMBuilder().build(w3cDocument), clazz);
+                }catch(Exception e){
+                    throw new SerializationException(e);
+                }
             }
 
             default -> throw new UnsupportedOperationException("Implement me");
