@@ -77,7 +77,7 @@ public enum SerializableType {
      */
     @NotNull
     public static Configuration forFile(File file){
-        String extension = FilenameUtils.getExtension(file.getName());
+        String extension = "." + FilenameUtils.getExtension(file.getName());
         for(SerializableType type : values()){
             if(extension.equals(type.fileExtension)){
                 return createInstance(type.configClass, file);

@@ -1,6 +1,5 @@
 package net.configuration.config;
 
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
