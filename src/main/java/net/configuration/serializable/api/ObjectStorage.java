@@ -88,7 +88,7 @@ public final class ObjectStorage {
     @NotNull
     @SuppressWarnings("unchecked")
     public static <T> Optional<T> deserializeObject(@NotNull SerializedObject obj, @NotNull Class<T> classOfT){
-        if(obj.getForClass().orElse(null) == NullSerializable.class || obj.isNextNull("object", classOfT)){
+        if(obj.getForClass().orElse(null) == NullSerializable.class){
             return Optional.empty();
         }
 
