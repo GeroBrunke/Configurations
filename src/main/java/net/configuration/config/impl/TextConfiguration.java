@@ -1,16 +1,17 @@
 package net.configuration.config.impl;
 
-import net.configuration.config.Configuration;
-import net.configuration.network.SQLConnection;
+import net.configuration.config.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-public class SQLConfiguration implements Configuration {
+public class TextConfiguration extends FileConfiguration {
 
-    public SQLConfiguration(@NotNull SQLConnection con,  @NotNull String table){
-
+    protected TextConfiguration(File file) throws IOException {
+        super(file);
     }
 
     @Override
@@ -21,11 +22,6 @@ public class SQLConfiguration implements Configuration {
     @Override
     public boolean reload() {
         return false;
-    }
-
-    @Override
-    public @NotNull String getName() {
-        return null;
     }
 
     @Override

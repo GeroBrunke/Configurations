@@ -1,0 +1,18 @@
+<?xml version = "1.0"?>
+<config>
+    <boolean>true</boolean>
+    <integer>5</integer>
+    <char>d</char>
+    <short>-3</short>
+    <float>3.14</float>
+    <double>-0.271</double>
+    <long>3761281901</long>
+    <byte>98</byte>
+    <string>Hello World</string>
+    <collection>
+        <elem id="1">1</elem>
+        <elem id="2">2</elem>
+        <elem id="3">3</elem>
+        <elem id="4">4</elem>
+    </collection>
+</config>

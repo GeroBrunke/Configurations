@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 public class JsonSerializedObject extends AbstractSerializedObject{
 
-    @NotNull private final JsonObject data;
+    @NotNull protected JsonObject data;
     @NotNull protected final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     @SuppressWarnings("unused") //called via reflection API

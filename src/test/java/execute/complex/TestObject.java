@@ -1,4 +1,4 @@
-package complex;
+package execute.complex;
 
 import net.configuration.serializable.api.*;
 import net.configuration.serializable.impl.SimpleCreatorImpl;
@@ -30,7 +30,7 @@ public class TestObject implements SerializableObject {
     private Object object;
 
     @SuppressWarnings("unused")
-    public TestObject(){
+    private TestObject(){
         this.ignoreValue = -3;
     }
 
@@ -63,7 +63,7 @@ public class TestObject implements SerializableObject {
         dest.setBoolean("boolValue", boolValue);
         dest.setEnum(selector);
         dest.setStringList(list);
-        dest.setObject("complex", complex);
+        dest.setObject("execute", complex);
         dest.setObject("object", object);
     }
 
@@ -75,7 +75,7 @@ public class TestObject implements SerializableObject {
         selector = (EnumSelector) src.getEnum(EnumSelector.class).orElse(null);
         list = (List<String>) src.getStringList().orElse(new ArrayList<>());
         object = src.getObject("object", Object.class).orElse(null);
-        complex = src.getObject("complex", TestObject.class).orElse(null);
+        complex = src.getObject("execute", TestObject.class).orElse(null);
 
         return this;
     }

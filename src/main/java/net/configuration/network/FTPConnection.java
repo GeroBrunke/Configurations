@@ -1,20 +1,26 @@
 package net.configuration.network;
 
 import com.jcraft.jsch.*;
+import net.configuration.serializable.api.*;
+import net.configuration.serializable.impl.SimpleCreatorImpl;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-public class FTPConnection {
+public class FTPConnection implements SerializableObject {
 
-    @NotNull
-    private final String host;
-    private final int port;
-    @NotNull private final String user;
-    @NotNull private final String password;
+    @SerializationAPI
+    @SuppressWarnings("unused")
+    private static final Creator<FTPConnection> CREATOR = new SimpleCreatorImpl<>(FTPConnection.class);
 
-    private ChannelSftp channel;
+    private String host;
+    private int port;
+    private String user;
+    private String password;
+
+    @IgnoreSerialization
+    private transient ChannelSftp channel;
 
     /**
      * Create a new {@link FTPConnection} instance to the given remote server.
@@ -30,6 +36,9 @@ public class FTPConnection {
         this.user = user;
         this.password = password;
     }
+
+    @SuppressWarnings("unused")
+    private FTPConnection(){} //Hide implicit
 
     /**
      * Connect to the remote device via an FTP connection.
@@ -130,4 +139,21 @@ public class FTPConnection {
         this.channel.rm(remoteFile);
     }
 
+    @Override
+    public void write(@NotNull SerializedObject dest) {
+        dest.setString(this.host);
+        dest.setInt(this.port);
+        dest.setString(this.user);
+        dest.setString(this.password);
+    }
+
+    @Override
+    public @NotNull FTPConnection read(@NotNull SerializedObject src) {
+        this.host = src.getString().orElse("");
+        this.port = src.getInt().orElse(-1);
+        this.user = src.getString().orElse("");
+        this.password = src.getString().orElse("");
+
+        return this;
+    }
 }

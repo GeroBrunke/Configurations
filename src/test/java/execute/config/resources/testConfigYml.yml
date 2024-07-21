@@ -1,0 +1,14 @@
+boolean: true
+integer: 5
+char: d
+short: -3
+float: 3.14
+double: -0.271
+long: 3761281901
+byte: 98
+string: "Hello World"
+collection:
+  - 1
+  - 2
+  - 3
+  - 4

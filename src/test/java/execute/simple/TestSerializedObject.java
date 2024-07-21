@@ -1,4 +1,4 @@
-package simple;
+package execute.simple;
 
 import net.configuration.serializable.api.SerializableType;
 import net.configuration.serializable.api.SerializedObject;

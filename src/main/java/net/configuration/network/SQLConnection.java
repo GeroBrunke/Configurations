@@ -1,5 +1,7 @@
 package net.configuration.network;
 
+import net.configuration.serializable.api.*;
+import net.configuration.serializable.impl.SimpleCreatorImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
@@ -7,15 +9,20 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class SQLConnection {
+public class SQLConnection implements SerializableObject {
 
-    @NotNull private final String host;
-    private final int port;
-    @NotNull private final String username;
-    @NotNull private final String password;
-    @NotNull private final String database;
+    @SuppressWarnings("unused")
+    @SerializationAPI
+    private static final Creator<SQLConnection> CREATOR = new SimpleCreatorImpl<>(SQLConnection.class);
 
-    private Connection connection;
+    private String host;
+    private int port;
+    private String username;
+    private String password;
+    private String database;
+
+    @IgnoreSerialization
+    private transient Connection connection;
 
     /**
      * Create a new connection instance containing the relevant information to connect to a SQL server.
@@ -33,6 +40,9 @@ public class SQLConnection {
         this.password = password;
         this.database = database;
     }
+
+    @SuppressWarnings("unused")
+    private SQLConnection(){} //Hide implicit
 
     /**
      * Connect the current {@link SQLConnection} instance to the given server.
@@ -95,4 +105,23 @@ public class SQLConnection {
         }
     }
 
+    @Override
+    public void write(@NotNull SerializedObject dest) {
+        dest.setString(this.host);
+        dest.setInt(this.port);
+        dest.setString(this.username);
+        dest.setString(this.password);
+        dest.setString(this.database);
+    }
+
+    @Override
+    public @NotNull SQLConnection read(@NotNull SerializedObject src) {
+        this.host = src.getString().orElse("");
+        this.port = src.getInt().orElse(-1);
+        this.username = src.getString().orElse("");
+        this.password = src.getString().orElse("");
+        this.database = src.getString().orElse("");
+
+        return this;
+    }
 }
