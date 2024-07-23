@@ -1,10 +1,12 @@
 package net.configuration.config;
 
 import net.configuration.serializable.api.SerializableType;
+import net.configuration.serializable.api.SerializedObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 public abstract class FileConfiguration implements Configuration{
 
@@ -42,5 +44,22 @@ public abstract class FileConfiguration implements Configuration{
         return file.getName();
     }
 
+    @SuppressWarnings("unchecked")
+    protected <T> T getDataFieldFromSerializedObject(@NotNull SerializedObject obj){
+        try{
+            Field field = this.getDataFiled(obj);
+            return (T) field.get(obj);
 
+        }catch(Exception e){
+            throw new ConfigurationException(e);
+        }
+    }
+
+    private Field getDataFiled(@NotNull SerializedObject obj) throws NoSuchFieldException {
+        try{
+            return obj.getClass().getDeclaredField("data");
+        }catch(NoSuchFieldException e){
+            return obj.getClass().getField("data");
+        }
+    }
 }

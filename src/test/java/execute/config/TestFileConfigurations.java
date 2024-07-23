@@ -144,6 +144,7 @@ class TestFileConfigurations {
         config.setList("complexList", a);
         config.set(INTEGER, z);
 
+
         //Read again and check if updated
         assertEquals(val, config.get(STRING, String.class).orElseThrow());
         assertArrayEquals(a.toArray(), config.getList("complexList", TestObject.class).orElseThrow().toArray());

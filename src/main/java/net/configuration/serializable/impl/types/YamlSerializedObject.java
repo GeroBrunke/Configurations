@@ -5,6 +5,7 @@ import net.configuration.serializable.impl.NullSerializable;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.jetbrains.annotations.NotNull;
+import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -192,16 +193,11 @@ public class YamlSerializedObject extends AbstractSerializedObject{
         if(!this.data.contains(this.ymlPrefix + name))
             return Optional.empty();
 
-        try {
-            YamlSerializedObject obj = new YamlSerializedObject(YamlConfiguration.loadConfigurationFromString(this.data.getString(this.ymlPrefix + name)), classOfT);
-            T val = Creator.getCreator(classOfT).read(obj, classOfT);
-            return Optional.of(val);
+        YamlConfiguration c = (YamlConfiguration) this.copySection(this.data.getConfigurationSection(this.ymlPrefix + name), new YamlConfiguration());
+        YamlSerializedObject obj = new YamlSerializedObject(c, classOfT);
+        T val = Creator.getCreator(classOfT).read(obj, classOfT);
+        return Optional.of(val);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return Optional.empty();
     }
 
 
@@ -211,7 +207,7 @@ public class YamlSerializedObject extends AbstractSerializedObject{
         value.write(nested);
         nested.flush();
         try {
-            this.data.set(this.ymlPrefix + name, nested.toString());
+            this.data.set(this.ymlPrefix + name, nested.data.getConfigurationSection(""));
         } catch (Exception e) {
             throw new SerializationException(e);
         }
@@ -222,15 +218,8 @@ public class YamlSerializedObject extends AbstractSerializedObject{
         if(!this.data.contains(this.ymlPrefix + name))
             return Optional.empty();
 
-        try {
-            YamlSerializedObject obj = new YamlSerializedObject(YamlConfiguration.loadConfigurationFromString(this.data.getString(this.ymlPrefix + name)));
-            return Optional.of(obj);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return Optional.empty();
+        YamlSerializedObject obj = new YamlSerializedObject((YamlConfiguration) this.data.getConfigurationSection(this.ymlPrefix + name));
+        return Optional.of(obj);
 
     }
 
@@ -240,7 +229,7 @@ public class YamlSerializedObject extends AbstractSerializedObject{
         if(!(value instanceof YamlSerializedObject))
             throw new SerializationException("Cannot serialize a non-yml object into a yml configuration");
 
-        this.data.set(this.ymlPrefix + name, value.toString());
+        this.data.set(this.ymlPrefix + name, ((YamlSerializedObject) value).data.getConfigurationSection(""));
     }
 
     @Override
@@ -441,7 +430,7 @@ public class YamlSerializedObject extends AbstractSerializedObject{
 
         if(this.data.isConfigurationSection(this.ymlPrefix + name)){
            try{
-               YamlSerializedObject obj = new YamlSerializedObject(YamlConfiguration.loadConfigurationFromString(this.data.getString(this.ymlPrefix + name)), classOfT);
+               YamlSerializedObject obj = new YamlSerializedObject((YamlConfiguration) this.data.getConfigurationSection(this.ymlPrefix + name), classOfT);
                var opt = obj.getSerializable((Class<? extends SerializableObject>) classOfT);
                if(opt.isPresent())
                    return Optional.of(opt.get());
@@ -458,5 +447,19 @@ public class YamlSerializedObject extends AbstractSerializedObject{
         }
 
         return Optional.empty();
+    }
+
+    private ConfigurationSection copySection(ConfigurationSection source, ConfigurationSection target) {
+        for (String key : source.getKeys(false)) {
+            Object value = source.get(key);
+            if (value instanceof ConfigurationSection s) {
+                ConfigurationSection section = target.createSection(key);
+                copySection(s, section);
+            } else {
+                target.set(key, value);
+            }
+        }
+
+        return target;
     }
 }
