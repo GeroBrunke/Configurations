@@ -65,6 +65,7 @@ class TestFileConfigurations {
         assertEquals(0x5D, (byte) config.getByte(BYTE).orElseThrow());
         assertEquals("Test String value for primitive", config.getString(STRING).orElseThrow());
 
+
         this.restoreDefaultValues(config);
 
     }

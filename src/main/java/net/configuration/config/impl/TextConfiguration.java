@@ -129,15 +129,6 @@ public class TextConfiguration extends FileConfiguration {
 
     }
 
-    @Override
-    public @NotNull <T> Optional<T[]> getArray(@NotNull String path, @NotNull Class<T> classOfT) {
-        return Optional.empty();
-    }
-
-    @Override
-    public <T> void setArray(@NotNull String path, T[] array) {
-
-    }
 
     @Override
     public @NotNull <T> Optional<T> get(@NotNull String path, @NotNull Class<T> classOfT) {

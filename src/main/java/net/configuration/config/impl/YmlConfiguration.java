@@ -12,7 +12,6 @@ import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -199,17 +198,7 @@ public class YmlConfiguration extends FileConfiguration {
 
         }else if(classOfT.isEnum()){
             List<String> names = this.config.getStringList(path);
-            List<T> res = new ArrayList<>(names.size());
-            for(var e : names){
-                try {
-                    T val = (T) classOfT.getMethod("valueOf", String.class).invoke(null, e);
-                    res.add(val);
-                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
-                    throw new ConfigurationException(ex);
-                }
-            }
-
-            return Optional.of(res);
+            return Optional.of(this.getEnumList(names, classOfT));
 
         }else{
             throw new ConfigurationException("Could not read list. Invalid element type " + classOfT);
@@ -243,21 +232,6 @@ public class YmlConfiguration extends FileConfiguration {
         }else{
             throw new ConfigurationException("Could not set list " + list + ". Invalid element type " + classOfT);
         }
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public @NotNull <T> Optional<T[]> getArray(@NotNull String path, @NotNull Class<T> classOfT) {
-        Optional<List<T>> opt = this.getList(path, classOfT);
-        if(opt.isEmpty())
-            return Optional.empty();
-
-        return Optional.of(opt.get().toArray((T[]) Array.newInstance(classOfT, 0)));
-    }
-
-    @Override
-    public <T> void setArray(@NotNull String path, T[] array) {
-        this.setList(path, List.of(array));
     }
 
     @Override
