@@ -10,9 +10,9 @@
     <byte>98</byte>
     <string>Hello World</string>
     <collection>
-        <elem id="1">1</elem>
-        <elem id="2">2</elem>
-        <elem id="3">3</elem>
-        <elem id="4">4</elem>
+        <Elem-0>1</Elem-0>
+        <Elem-1>2</Elem-1>
+        <Elem-2>3</Elem-2>
+        <Elem-3>4</Elem-3>
     </collection>
 </config>

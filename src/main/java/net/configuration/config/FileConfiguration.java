@@ -2,6 +2,7 @@ package net.configuration.config;
 
 import net.configuration.serializable.api.SerializableType;
 import net.configuration.serializable.api.SerializedObject;
+import org.apache.commons.lang3.ClassUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -98,5 +99,40 @@ public abstract class FileConfiguration implements Configuration{
         }catch(NoSuchFieldException e){
             return obj.getClass().getField("data");
         }
+    }
+
+    protected Object extractPrimitive(@NotNull String value, @NotNull Class<?> clazz){
+        if(clazz.isPrimitive())
+            clazz = ClassUtils.primitiveToWrapper(clazz);
+
+        if(clazz == Boolean.class){
+            return Boolean.parseBoolean(value);
+
+        }else if(clazz == Byte.class){
+            return Byte.parseByte(value);
+
+        }else if(clazz == Short.class){
+            return Short.parseShort(value);
+
+        }else if(clazz == Integer.class){
+            return Integer.parseInt(value);
+
+        }else if(clazz == Long.class){
+            return Long.parseLong(value);
+
+        }else if(clazz == Float.class){
+            return Float.parseFloat(value);
+
+        }else if(clazz == Double.class){
+            return Double.parseDouble(value);
+
+        }else if(clazz == Character.class){
+            return value.charAt(0);
+
+        }else if(clazz == String.class){
+            return value;
+        }
+
+        return null;
     }
 }

@@ -486,6 +486,9 @@ public class XmlSerializedObject extends AbstractSerializedObject{
     }
 
     private String toPrettyString(){
+        if(this.data.getParent() != null)
+            this.data.getParent().removeContent(this.data);
+
         Document doc = new Document();
         doc.setRootElement(this.data);
         XMLOutputter out = new XMLOutputter();
