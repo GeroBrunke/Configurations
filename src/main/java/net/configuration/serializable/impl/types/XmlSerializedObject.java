@@ -5,6 +5,7 @@ import net.configuration.serializable.api.SerializableObject;
 import net.configuration.serializable.api.SerializationException;
 import net.configuration.serializable.api.SerializedObject;
 import net.configuration.serializable.impl.NullSerializable;
+import net.configuration.serializable.impl.SerializationHelper;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
@@ -450,7 +451,7 @@ public class XmlSerializedObject extends AbstractSerializedObject{
             if(elem.equals(NullSerializable.CODON))
                 return Optional.empty();
 
-            return Optional.ofNullable(this.extractPrimitive(elem, classOfT));
+            return Optional.ofNullable(SerializationHelper.extractPrimitive(elem, classOfT));
 
         }else{
             //read complex object

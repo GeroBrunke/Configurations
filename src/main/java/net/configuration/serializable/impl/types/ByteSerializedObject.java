@@ -5,6 +5,7 @@ import net.configuration.serializable.api.SerializableObject;
 import net.configuration.serializable.api.SerializationException;
 import net.configuration.serializable.api.SerializedObject;
 import net.configuration.serializable.impl.NullSerializable;
+import net.configuration.serializable.impl.SerializationHelper;
 import org.apache.commons.lang3.ClassUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -323,7 +324,7 @@ public class ByteSerializedObject extends AbstractSerializedObject {
                 return Optional.of(o.get());
 
         }else {
-            return Optional.ofNullable(this.extractPrimitive(elem, classOfT));
+            return Optional.ofNullable(SerializationHelper.extractPrimitive(elem, classOfT));
         }
 
         return Optional.empty();

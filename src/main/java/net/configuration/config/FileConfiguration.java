@@ -101,38 +101,4 @@ public abstract class FileConfiguration implements Configuration{
         }
     }
 
-    protected Object extractPrimitive(@NotNull String value, @NotNull Class<?> clazz){
-        if(clazz.isPrimitive())
-            clazz = ClassUtils.primitiveToWrapper(clazz);
-
-        if(clazz == Boolean.class){
-            return Boolean.parseBoolean(value);
-
-        }else if(clazz == Byte.class){
-            return Byte.parseByte(value);
-
-        }else if(clazz == Short.class){
-            return Short.parseShort(value);
-
-        }else if(clazz == Integer.class){
-            return Integer.parseInt(value);
-
-        }else if(clazz == Long.class){
-            return Long.parseLong(value);
-
-        }else if(clazz == Float.class){
-            return Float.parseFloat(value);
-
-        }else if(clazz == Double.class){
-            return Double.parseDouble(value);
-
-        }else if(clazz == Character.class){
-            return value.charAt(0);
-
-        }else if(clazz == String.class){
-            return value;
-        }
-
-        return null;
-    }
 }

@@ -4,6 +4,7 @@ import net.configuration.config.ConfigurationException;
 import net.configuration.config.FileConfiguration;
 import net.configuration.serializable.api.Creator;
 import net.configuration.serializable.api.SerializableObject;
+import net.configuration.serializable.impl.SerializationHelper;
 import net.configuration.serializable.impl.types.XmlSerializedObject;
 import org.apache.commons.lang3.ClassUtils;
 import org.jdom2.Document;
@@ -25,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class XmlConfiguration extends FileConfiguration {
@@ -286,9 +288,8 @@ public class XmlConfiguration extends FileConfiguration {
 
         //read a valid object
         if(ClassUtils.isPrimitiveOrWrapper(classOfT) || classOfT == String.class){
-            Object prim = this.extractPrimitive(elem.getText(), classOfT);
-            T val = classOfT.cast(prim);
-            return Optional.of(val);
+            Object prim = Objects.requireNonNull(SerializationHelper.extractPrimitive(elem.getText(), classOfT));
+            return Optional.of((T) prim);
 
         }else if(List.class.isAssignableFrom(classOfT)){
             throw new ConfigurationException("Cannot get a list this way. Use getList(..) instead.");
@@ -454,7 +455,7 @@ public class XmlConfiguration extends FileConfiguration {
         String[] d = elem.getText().split(", ");
         List<T> res = new ArrayList<>();
         for(String e : d){
-            T val = (T) this.extractPrimitive(e, classOfT);
+            T val = (T) SerializationHelper.extractPrimitive(e, classOfT);
             res.add(val);
         }
 
