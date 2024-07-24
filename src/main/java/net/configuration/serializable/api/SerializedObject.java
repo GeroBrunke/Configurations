@@ -1,7 +1,6 @@
 package net.configuration.serializable.api;
 
 import com.google.gson.JsonParser;
-import net.configuration.main.Main;
 import net.configuration.serializable.impl.MapSerializable;
 import net.configuration.serializable.impl.SerializationHelper;
 import net.configuration.serializable.impl.types.*;

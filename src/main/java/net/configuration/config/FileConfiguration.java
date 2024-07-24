@@ -2,7 +2,6 @@ package net.configuration.config;
 
 import net.configuration.serializable.api.SerializableType;
 import net.configuration.serializable.api.SerializedObject;
-import org.apache.commons.lang3.ClassUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
