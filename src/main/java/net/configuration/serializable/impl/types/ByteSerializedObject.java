@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class ByteSerializedObject extends AbstractSerializedObject {
 
     public static final int BUFFER_SIZE = (int) Math.pow(2, 20); //max read 1MB
-    protected final Map<String, String> data = new HashMap<>();
+    protected Map<String, String> data = new HashMap<>();
     private ByteBuffer buffer;
     private boolean flushed = false;
 
@@ -29,12 +29,14 @@ public class ByteSerializedObject extends AbstractSerializedObject {
     }
 
     public ByteSerializedObject(@NotNull ByteBuffer buffer) {
-        this.load(buffer);
+        this.data.clear();
+        this.data = load(buffer);
     }
 
     public ByteSerializedObject(@NotNull ByteBuffer buffer, @NotNull Class<?> clazz){
         super(clazz);
-        this.load(buffer);
+        this.data.clear();
+        this.data = load(buffer);
     }
 
     @SuppressWarnings("unused")
@@ -386,8 +388,8 @@ public class ByteSerializedObject extends AbstractSerializedObject {
         return Arrays.toString(data);
     }
 
-    private void load(ByteBuffer data){
-        this.data.clear();
+    public static Map<String, String> load(ByteBuffer data){
+        Map<String, String> map = new HashMap<>();
 
         while(data.position() < data.array().length){
             int length = data.getInt();
@@ -402,8 +404,10 @@ public class ByteSerializedObject extends AbstractSerializedObject {
 
             String key = e[0];
             String value = e[1];
-            this.data.put(key, value);
+            map.put(key, value);
         }
+
+        return map;
     }
 
     private Optional<ByteSerializedObject> createFromStr(@NotNull String str){
