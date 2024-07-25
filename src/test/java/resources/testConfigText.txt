@@ -1,0 +1,1 @@
+{0=Hello, 1=Hello, b=World!, boolean=true, string=Hello World, double=-0.271, byte=98, char=d, short=-3, integer=5, float=3.14, long=3761281901}

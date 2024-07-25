@@ -14,7 +14,7 @@ import java.nio.file.Path;
 public final class Main {
 
     /*
-    TODO: Add configurations
+    TODO: In TextSerializable: Make nested objects not represented as a byte array
 
     TODO: Add SQL Serializable and Config
      */

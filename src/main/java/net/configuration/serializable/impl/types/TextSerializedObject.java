@@ -21,7 +21,7 @@ public class TextSerializedObject extends ByteSerializedObject{
 
     public TextSerializedObject(@NotNull String buffer, @NotNull Class<?> forClass){
         //create byte Array from str
-        super(a(buffer), forClass);
+        super(createBufferMapFromString(buffer), forClass);
     }
 
     @SuppressWarnings("unused")
@@ -51,7 +51,7 @@ public class TextSerializedObject extends ByteSerializedObject{
     }
 
     @NotNull
-    private static ByteBuffer a(String raw){
+    private static ByteBuffer createBufferMapFromString(String raw){
         Map<String, String> map = deserializeStringToMap(raw);
         return convertMapToBuffer(map);
     }
@@ -77,7 +77,8 @@ public class TextSerializedObject extends ByteSerializedObject{
         return buffer;
     }
 
-    private static Map<String, String> deserializeStringToMap(@NotNull String data){
+    //TODO: Impl Changes from TODO in Main here
+    public static Map<String, String> deserializeStringToMap(@NotNull String data){
         List<String> nestedStrings = new LinkedList<>();
         int l = 0;
         int id = 0;

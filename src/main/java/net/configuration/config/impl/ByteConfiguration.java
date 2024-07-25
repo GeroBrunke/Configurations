@@ -20,13 +20,19 @@ import java.util.*;
 
 public class ByteConfiguration extends FileConfiguration {
 
-    private Map<String, String> config;
+    protected Map<String, String> config;
 
     protected ByteConfiguration(File file) throws IOException {
+        this(file, true);
+    }
+
+    protected ByteConfiguration(File file, boolean read) throws IOException {
         super(file);
 
-        byte[] bytes = Files.readAllBytes(file.toPath());
-        this.config = ByteSerializedObject.load(ByteBuffer.wrap(bytes));
+        if(read){
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            this.config = ByteSerializedObject.load(ByteBuffer.wrap(bytes));
+        }
     }
 
     @Override
@@ -335,7 +341,7 @@ public class ByteConfiguration extends FileConfiguration {
 
     }
 
-    private String convertPrimitiveList(@NotNull List<?> list){
+    protected String convertPrimitiveList(@NotNull List<?> list){
         StringBuilder entry = new StringBuilder();
         for(var e : list){
             entry.append(", ").append(e);
@@ -346,7 +352,7 @@ public class ByteConfiguration extends FileConfiguration {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> List<T> getPrimitiveList(@NotNull String elem, @NotNull Class<T> classOfT){
+    protected <T> List<T> getPrimitiveList(@NotNull String elem, @NotNull Class<T> classOfT){
         String[] d = elem.split(", ");
         List<T> res = new ArrayList<>();
         for(String e : d){
