@@ -144,7 +144,7 @@ public class TupleSerializable implements SerializableObject {
             }
 
             case TEXT -> {
-                return new TextSerializedObject(data, clazz);
+                return new TextSerializedObject(data.substring(1, data.length() - 1), clazz);
             }
 
             case XML -> {

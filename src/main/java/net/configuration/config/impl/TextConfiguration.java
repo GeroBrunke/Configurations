@@ -30,7 +30,7 @@ public class TextConfiguration extends ByteConfiguration {
     @Override
     public boolean save() {
         try(FileOutputStream fout = new FileOutputStream(this.file)){
-            fout.write(this.config.toString().getBytes(StandardCharsets.UTF_8));
+            fout.write(this.toString().getBytes(StandardCharsets.UTF_8));
             return true;
         }catch(IOException e){
             e.printStackTrace();
@@ -190,8 +190,22 @@ public class TextConfiguration extends ByteConfiguration {
         }
     }
 
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder("{");
+        int max = this.config.size();
+        int i = 0;
+        for(var e : this.config.entrySet()){
+            str.append(e.getKey()).append(":").append(e.getValue()).append((i < max - 1) ? "<br>" : "");
+            i++;
+        }
+        str.append("}");
+
+        return str.toString();
+    }
+
     private void load() throws IOException {
         String data = Files.readString(this.file.toPath(), StandardCharsets.UTF_8);
-        this.config = TextSerializedObject.deserializeStringToMap(data);
+        this.config = TextSerializedObject.deserializeString(data.substring(1, data.length() - 1));
     }
 }

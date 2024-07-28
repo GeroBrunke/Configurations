@@ -909,7 +909,7 @@ public interface SerializedObject extends ObjectSerializer{
                 case BYTE -> obj = new ByteSerializedObject(ByteBuffer.wrap(array), forClass);
                 case JSON -> obj = new JsonSerializedObject(JsonParser.parseString(strData).getAsJsonObject(), forClass);
                 case YAML -> obj = new YamlSerializedObject(YamlConfiguration.loadConfigurationFromString(strData), forClass);
-                case TEXT -> obj = new TextSerializedObject(strData, forClass);
+                case TEXT -> obj = new TextSerializedObject(strData.substring(1, strData.length() - 1), forClass);
                 //case SQL -> obj = new SQLSerializedObject(Main.getDefaultConnection(), strData, forClass);
 
                 case PROPERTIES -> {
