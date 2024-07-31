@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class PropertiesConfiguration extends FileConfiguration {
@@ -287,12 +286,7 @@ public class PropertiesConfiguration extends FileConfiguration {
             }
 
         }else if(classOfT.isEnum()){
-            try {
-                T val = (T) classOfT.getMethod("valueOf", String.class).invoke(null, elem);
-                return Optional.of(val);
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                throw new ConfigurationException(e);
-            }
+            return Optional.of(this.convertToEnum(elem, classOfT));
 
         }else if(classOfT.isArray()){
             throw new ConfigurationException("Cannot get an array this way. Use getList(..) instead.");

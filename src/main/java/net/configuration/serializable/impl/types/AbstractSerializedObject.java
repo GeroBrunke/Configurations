@@ -228,14 +228,6 @@ public abstract class AbstractSerializedObject implements SerializedObject {
         this.setNull(this.getFieldName(Class.class));
     }
 
-    @Override
-    public boolean isNextNull(@NotNull Class<?> type) {
-        if(type.isPrimitive())
-            type = ClassUtils.primitiveToWrapper(type);
-
-        String name = this.getFieldName(type);
-        return this.isNextNull(name, type);
-    }
 
     @Override
     public Optional<SerializedObject> get() {

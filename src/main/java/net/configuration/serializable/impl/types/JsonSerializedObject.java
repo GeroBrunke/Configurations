@@ -295,15 +295,6 @@ public class JsonSerializedObject extends AbstractSerializedObject{
     }
 
     @Override
-    public boolean isNextNull(@NotNull Class<?> type) {
-        if(type.isPrimitive())
-            type = ClassUtils.primitiveToWrapper(type);
-
-        String name = this.getFieldName(type);
-        return this.isNextNull(name, type);
-    }
-
-    @Override
     public boolean isNextNull(@NotNull String name, @NotNull Class<?> type) {
         if(type.isPrimitive())
             type = ClassUtils.primitiveToWrapper(type);

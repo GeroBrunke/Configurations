@@ -630,11 +630,6 @@ public interface SerializedObject extends ObjectSerializer{
      */
     void setNull();
 
-    /**
-     * Check if the next field to read stores a serialized null value.
-     * @return If the next value is a null value.
-     */
-    boolean isNextNull(@NotNull Class<?> type);
 
     /**
      * Check if the value mapped to the given name stores a null serialized value.

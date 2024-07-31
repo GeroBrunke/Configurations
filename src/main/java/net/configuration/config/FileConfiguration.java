@@ -92,6 +92,16 @@ public abstract class FileConfiguration implements Configuration{
         return res;
     }
 
+    @NotNull
+    @SuppressWarnings("unchecked")
+    protected <T> T convertToEnum(@NotNull String elem, @NotNull Class<T> classOfT){
+        try {
+            return (T) classOfT.getMethod("valueOf", String.class).invoke(null, elem);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new ConfigurationException(e);
+        }
+    }
+
     private Field getDataFiled(@NotNull SerializedObject obj) throws NoSuchFieldException {
         try{
             return obj.getClass().getDeclaredField("data");

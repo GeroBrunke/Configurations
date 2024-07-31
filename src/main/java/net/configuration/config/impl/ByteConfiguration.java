@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -22,6 +21,7 @@ public class ByteConfiguration extends FileConfiguration {
 
     protected Map<String, String> config;
 
+    @SuppressWarnings("unused") // called via reflection API
     protected ByteConfiguration(File file) throws IOException {
         this(file, true);
     }
@@ -234,12 +234,7 @@ public class ByteConfiguration extends FileConfiguration {
             this.setString(path, str.toString());
 
         }else if(classOfT.isEnum()){
-            List<String> names = new ArrayList<>();
-            for(var e : list){
-                Enum<?> en = (Enum<?>) e;
-                names.add(en.name());
-            }
-            this.setString(path, this.convertPrimitiveList(names));
+            this.setEnumList(path, list);
 
         }else{
             throw new ConfigurationException("Could not set list " + list + ". Invalid element type " + classOfT);
@@ -270,12 +265,7 @@ public class ByteConfiguration extends FileConfiguration {
             return Optional.of((T) val);
 
         }else if(classOfT.isEnum()){
-            try {
-                T val = (T) classOfT.getMethod("valueOf", String.class).invoke(null, elem);
-                return Optional.of(val);
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                throw new ConfigurationException(e);
-            }
+            return Optional.of(this.convertToEnum(elem, classOfT));
 
         }else if(classOfT.isArray()){
             throw new ConfigurationException("Cannot get an array this way. Use getList(..) instead.");
@@ -360,6 +350,15 @@ public class ByteConfiguration extends FileConfiguration {
         }
 
         return res;
+    }
+
+    protected void setEnumList(@NotNull String path, @NotNull List<?> list){
+        List<String> names = new ArrayList<>();
+        for(var e : list){
+            Enum<?> en = (Enum<?>) e;
+            names.add(en.name());
+        }
+        this.setString(path, this.convertPrimitiveList(names));
     }
 
 }
