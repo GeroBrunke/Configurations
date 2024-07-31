@@ -1,6 +1,7 @@
 package net.configuration.serializable.impl.types;
 
 
+import net.configuration.config.ConfigurationException;
 import net.configuration.serializable.api.Creator;
 import net.configuration.serializable.api.SerializableObject;
 import net.configuration.serializable.api.SerializationException;
@@ -15,6 +16,7 @@ import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.logging.Logger;
 
 public class TextSerializedObject extends ByteSerializedObject{
@@ -198,50 +200,61 @@ public class TextSerializedObject extends ByteSerializedObject{
 
     @NotNull
     public static Map<String, String> deserializeString(@NotNull String data) {
-        List<String> nestedStrings = new LinkedList<>();
-        int l = 0;
-        int id = 0;
-        int nestedIdx = data.indexOf(String.valueOf(NESTED_BEGIN), l);
-        while(l < data.length() && nestedIdx != -1){
-            String nested = readNested(data.substring(nestedIdx));
-            l += nested.length();
-            nestedIdx = data.indexOf(String.valueOf(NESTED_BEGIN), l);
-            nestedStrings.add(nested);
-            data = data.replace(nested, String.valueOf(id++));
-            nestedIdx -= nested.length();
+        if(data.isEmpty())
+            return new HashMap<>();
+
+        List<Nested> nestedStrings = new LinkedList<>();
+        int left = -1;
+        Deque<Character> stack = new ConcurrentLinkedDeque<>();
+        for(int i = 0; i < data.length(); i++){
+            char c = data.charAt(i);
+            if(c == NESTED_BEGIN){
+                if(stack.isEmpty())
+                    left = i+1;
+
+                stack.push(c);
+
+
+            }else if(c == NESTED_END){
+                if(stack.isEmpty())
+                    throw new ConfigurationException("Error while deserializing: Stack already empty");
+
+                stack.pop();
+                if(stack.isEmpty()){
+                    Nested rep = new Nested(left, i, NESTED_BEGIN + data.substring(left, i) + NESTED_END);
+                    nestedStrings.add(rep);
+                }
+            }
         }
 
+        if(!stack.isEmpty())
+            throw new ConfigurationException("Error while deserializing: Stack not empty");
+
+        //convert to Map
         Map<String, String> map = new HashMap<>();
+        int idx = 0;
+        for(Nested n : nestedStrings){
+            data = data.replace(n.value, NESTED_BEGIN + String.valueOf(idx++) + NESTED_END);
+        }
+
+
         int i = 0;
-        for(String entry : data.split("<br>")){
-            String[] d = entry.split(":");
+        for(String e : data.split("<br>")){
+            String[] d = e.split(":");
             String key = d[0];
             String value = d[1];
 
-            if(value.startsWith(String.valueOf(NESTED_BEGIN)) && value.endsWith(String.valueOf(NESTED_END))){
-                value = value.replace(String.valueOf(NESTED_BEGIN) + i + NESTED_END, NESTED_BEGIN + nestedStrings.get(i) + NESTED_END);
-                i++;
-            }
+            if(value.startsWith(String.valueOf(NESTED_BEGIN)) && value.endsWith(String.valueOf(NESTED_END)))
+                value = nestedStrings.get(i++).value;
 
             map.put(key, value);
-
         }
 
         return map;
 
     }
 
-    private static String readNested(@NotNull String data){
-        StringBuilder s = new StringBuilder();
-        for(int i = 0; i < data.length(); i++){
-            char c = data.charAt(i);
-            if(c == NESTED_BEGIN)
-                return readNested(data.substring(i+1));
-            else if(c == NESTED_END)
-                return s.toString();
-            else s.append(c);
-        }
+    private record Nested (int left, int right, @NotNull String value){
 
-        return s.toString();
     }
 }

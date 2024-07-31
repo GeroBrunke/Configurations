@@ -63,9 +63,9 @@ public class TextConfiguration extends ByteConfiguration {
 
         }else if(SerializableObject.class.isAssignableFrom(classOfT)){
             List<T> res = new ArrayList<>();
-            String[] data = elem.split("<br>");
+            String[] data = elem.split("\\[br]");
             for(String e : data){
-                TextSerializedObject obj = new TextSerializedObject(e, classOfT);
+                TextSerializedObject obj = new TextSerializedObject(e.substring(1, e.length() - 1), classOfT);
                 SerializableObject val = Creator.getCreator((Class<? extends SerializableObject>) classOfT).read(obj);
                 res.add((T) val);
             }
@@ -98,7 +98,7 @@ public class TextConfiguration extends ByteConfiguration {
                 ((SerializableObject) e).write(obj);
                 obj.flush();
 
-                str.append("<br>").append(obj);
+                str.append("[br]").append(obj);
             }
             str = new StringBuilder(str.substring(4));
             this.setString(path, str.toString());
@@ -136,7 +136,7 @@ public class TextConfiguration extends ByteConfiguration {
             throw new ConfigurationException("Cannot get a list this way. Use getList(..) instead.");
 
         }else if(SerializableObject.class.isAssignableFrom(classOfT)){
-            TextSerializedObject obj = new TextSerializedObject(elem, classOfT);
+            TextSerializedObject obj = new TextSerializedObject(elem.substring(1, elem.length() - 1), classOfT);
             SerializableObject val = Creator.getCreator((Class<? extends SerializableObject>) classOfT).read(obj);
             return Optional.of((T) val);
 
@@ -192,6 +192,9 @@ public class TextConfiguration extends ByteConfiguration {
 
     @Override
     public String toString() {
+        if(this.config == null)
+            return "";
+
         StringBuilder str = new StringBuilder("{");
         int max = this.config.size();
         int i = 0;
@@ -206,6 +209,9 @@ public class TextConfiguration extends ByteConfiguration {
 
     private void load() throws IOException {
         String data = Files.readString(this.file.toPath(), StandardCharsets.UTF_8);
-        this.config = TextSerializedObject.deserializeString(data.substring(1, data.length() - 1));
+        if(!data.isEmpty())
+            data = data.substring(1, data.length() - 1);
+
+        this.config = TextSerializedObject.deserializeString(data);
     }
 }

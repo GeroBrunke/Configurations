@@ -1,1 +1,1 @@
-{0=Hello, 1=Hello, b=World!, boolean=true, string=Hello World, double=-0.271, byte=98, char=d, short=-3, integer=5, float=3.14, long=3761281901}
+{boolean:true<br>string:Hello World<br>double:-0.271<br>byte:98<br>char:d<br>short:-3<br>integer:5<br>float:3.14<br>long:3761281901}

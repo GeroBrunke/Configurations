@@ -9,10 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
@@ -390,27 +387,19 @@ public class YamlSerializedObject extends AbstractSerializedObject{
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        File dummy = new File("dummy.yml");
         try{
-            if(!dummy.createNewFile())
-                throw new SerializationException("Could not create dummy file");
 
-            this.data.save(dummy);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
+            this.data.save(writer);
 
-            try(FileInputStream fis = new FileInputStream(dummy)){
-                for(String e : IOUtils.readLines(fis, StandardCharsets.UTF_8)){
-                    str.append(e).append("\n");
-                }
+            ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+            for(String e : IOUtils.readLines(in, StandardCharsets.UTF_8)){
+                str.append(e).append("\n");
             }
 
         }catch(IOException e){
             e.printStackTrace();
-        }
-
-        try {
-            Files.delete(dummy.toPath());
-        } catch (IOException e) {
-            return "ERROR WHILE SERIALIZING";
         }
 
         return str.toString();

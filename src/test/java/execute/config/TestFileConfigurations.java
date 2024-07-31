@@ -67,6 +67,7 @@ class TestFileConfigurations {
 
 
         this.restoreDefaultValues(config);
+        this.checkForDefaultValues(config);
 
     }
 
@@ -94,6 +95,7 @@ class TestFileConfigurations {
         assertArrayEquals(newList.toArray(), list.toArray());
 
         this.restoreDefaultValues(config);
+        this.checkForDefaultValues(config);
 
 
     }
@@ -121,6 +123,7 @@ class TestFileConfigurations {
         assertEquals(z, config.get(INTEGER, Integer.class).orElseThrow());
 
         this.restoreDefaultValues(config);
+        this.checkForDefaultValues(config);
 
     }
 
@@ -152,6 +155,7 @@ class TestFileConfigurations {
         assertEquals(z, config.get(INTEGER, Integer.class).orElseThrow());
 
         this.restoreDefaultValues(config);
+        this.checkForDefaultValues(config);
     }
 
     @ParameterizedTest
