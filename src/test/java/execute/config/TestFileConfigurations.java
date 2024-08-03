@@ -217,7 +217,7 @@ class TestFileConfigurations {
 
 
     private File loadFile(String name) throws URISyntaxException {
-        URL url = TestFileConfigurations.class.getClassLoader().getResource(name);
+        URL url = getClass().getResource("/resources/" + name);
         Objects.requireNonNull(url);
 
         return new File(url.toURI());
