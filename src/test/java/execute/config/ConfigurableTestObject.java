@@ -1,4 +1,4 @@
-package execute.configurable;
+package execute.config;
 
 import net.configuration.config.Configurable;
 import net.configuration.config.Configuration;

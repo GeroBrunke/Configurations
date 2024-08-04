@@ -1,4 +1,4 @@
-package execute.configurable;
+package execute.config;
 
 import net.configuration.config.Configuration;
 import org.junit.jupiter.api.DisplayName;

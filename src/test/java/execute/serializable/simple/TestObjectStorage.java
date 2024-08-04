@@ -1,6 +1,6 @@
-package execute.simple;
+package execute.serializable.simple;
 
-import execute.complex.TestObject;
+import execute.serializable.complex.TestObject;
 import net.configuration.serializable.api.ObjectStorage;
 import net.configuration.serializable.api.SerializableType;
 import net.configuration.serializable.api.SerializedObject;

@@ -1,6 +1,6 @@
 package execute.config;
 
-import execute.complex.TestObject;
+import execute.serializable.complex.TestObject;
 import net.configuration.config.Configuration;
 import net.configuration.config.FileConfiguration;
 import net.configuration.serializable.api.SerializableType;
