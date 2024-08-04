@@ -263,7 +263,7 @@ public class PropertiesSerializedObject extends AbstractSerializedObject{
 
         try{
             List<SerializableObject> list = new ArrayList<>();
-            String array = this.getString(this.xmlPrefix + name).orElse("");
+            String array = this.getString(name).orElse("");
             if(array.isBlank())
                 return Optional.empty();
 
@@ -299,7 +299,7 @@ public class PropertiesSerializedObject extends AbstractSerializedObject{
             str.append("[<br>]").append(nested);
         }
         str.append("]");
-        this.setString(this.xmlPrefix + name, str.toString());
+        this.setString(name, str.toString());
 
     }
 

@@ -14,7 +14,6 @@ import java.nio.file.Path;
 public final class Main {
 
     /*
-    TODO: Add Tests for SQL and FTP connection
 
     TODO: Add SQL Serializable and Config
      */
