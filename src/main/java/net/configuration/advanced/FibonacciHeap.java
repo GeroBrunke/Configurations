@@ -17,7 +17,7 @@ public class FibonacciHeap<K extends Comparable<? super K>, V> extends Addressab
      * @param defaultKey  The default element key for every element if no key was provided when adding an element.
      * @param elementType The type of elements stored in this queue.
      */
-    protected FibonacciHeap(@NotNull Comparator<K> comparator, @NotNull K defaultKey, @NotNull Class<V> elementType) {
+    public FibonacciHeap(@NotNull Comparator<K> comparator, @NotNull K defaultKey, @NotNull Class<V> elementType) {
         super(comparator, defaultKey, elementType);
     }
 
