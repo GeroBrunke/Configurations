@@ -1,6 +1,7 @@
 package net.configuration.serializable.impl;
 
 import com.google.gson.JsonParser;
+import net.configuration.main.Main;
 import net.configuration.serializable.api.*;
 import net.configuration.serializable.impl.types.*;
 import org.apache.commons.lang3.ClassUtils;
@@ -28,7 +29,7 @@ public class TupleSerializable implements SerializableObject {
         return ser.read(src);
     };
 
-    private String key;
+    private String keyVal;
     private String value;
 
     private TupleSerializable(){} //Hide implicit
@@ -40,20 +41,20 @@ public class TupleSerializable implements SerializableObject {
 
     @Override
     public void write(@NotNull SerializedObject dest) {
-        dest.setString("key", this.key);
+        dest.setString("keyVal", this.keyVal);
         dest.setString("value", this.value);
     }
 
     @Override
     public @NotNull TupleSerializable read(@NotNull SerializedObject src) {
-        this.key = src.getString("key").orElse(INVALID);
+        this.keyVal = src.getString("keyVal").orElse(INVALID);
         this.value = src.getString("value").orElse(INVALID);
         return this;
     }
 
     @NotNull
     public Optional<Object> getKey(@NotNull SerializableType type, @NotNull Class<?> clazz){
-        return this.deserializeString(type, clazz, this.key);
+        return this.deserializeString(type, clazz, this.keyVal);
     }
 
     @NotNull
@@ -64,13 +65,14 @@ public class TupleSerializable implements SerializableObject {
     private void initKey(@NotNull SerializableType type, @NotNull Object key){
         if(ClassUtils.isPrimitiveOrWrapper(key.getClass()) || key.getClass() == String.class){
             //primitive key
-            this.key = String.valueOf(key);
+            this.keyVal = String.valueOf(key);
 
         }else if(key instanceof SerializableObject keySer){
             //complex key
             SerializedObject ser = type.createEmpty(key.getClass());
             keySer.write(ser);
-            this.key = ser.toString();
+            ser.flush();
+            this.keyVal = ser.toString();
 
         }else{
             throw new SerializationException("Could not serialize key type " + key.getClass());
@@ -86,6 +88,7 @@ public class TupleSerializable implements SerializableObject {
             //complex key
             SerializedObject ser = type.createEmpty(value.getClass());
             keySer.write(ser);
+            ser.flush();
             this.value = ser.toString();
 
         }else{
@@ -158,6 +161,10 @@ public class TupleSerializable implements SerializableObject {
                 }catch(Exception e){
                     throw new SerializationException(e);
                 }
+            }
+
+            case SQL -> {
+                return new SQLSerializedObject(Main.getDefaultConnection(), data, clazz);
             }
 
             default -> throw new UnsupportedOperationException("Implement me");

@@ -3,12 +3,14 @@ package execute.serializable.complex;
 import net.configuration.serializable.api.Creator;
 import net.configuration.serializable.api.SerializableType;
 import net.configuration.serializable.api.SerializedObject;
+import net.configuration.serializable.impl.types.SQLSerializedObject;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TestSpecialObjects {
 
@@ -29,6 +31,10 @@ class TestSpecialObjects {
 
         assertEquals(inherit, read);
 
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
+
     }
 
     @ParameterizedTest
@@ -47,6 +53,10 @@ class TestSpecialObjects {
 
         assertEquals(value.getValue(), read.getValue());
         assertEquals(value, read);
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
 
     }
 

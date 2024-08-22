@@ -22,7 +22,7 @@ public class GenericSerializable<T> implements SerializableObject  {
 
     @Override
     public void write(@NotNull SerializedObject dest) {
-        dest.setString("class", classOfT);
+        dest.setString("classOfT", classOfT);
         dest.setObject("value", value);
     }
 
@@ -33,7 +33,7 @@ public class GenericSerializable<T> implements SerializableObject  {
     @SuppressWarnings("unchecked")
     public @NotNull GenericSerializable<T> read(@NotNull SerializedObject src) {
         try{
-            this.classOfT = src.getString("class").orElse(null);
+            this.classOfT = src.getString("classOfT").orElse(null);
             this.value = (T) src.getObject("value", Class.forName(classOfT)).orElse(null);
         }catch(ClassNotFoundException e){
             e.printStackTrace();

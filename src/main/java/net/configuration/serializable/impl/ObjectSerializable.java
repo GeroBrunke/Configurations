@@ -46,14 +46,14 @@ public class ObjectSerializable implements SerializableObject  {
 
     @Override
     public void write(@NotNull SerializedObject dest) {
-        dest.setString("class", this.className);
+        dest.setString("classVal", this.className);
         dest.setObject("value", this.object);
     }
 
     @Override
     public @NotNull ObjectSerializable read(@NotNull SerializedObject src) {
         try {
-            this.className = src.getString("class").orElse("");
+            this.className = src.getString("classVal").orElse("");
             this.clazz = Class.forName(this.className);
             this.object = src.getObject("value", this.clazz).orElse(null);
 

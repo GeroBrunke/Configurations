@@ -18,8 +18,8 @@ public enum SerializableType {
     YAML(YamlSerializedObject.class, YmlConfiguration.class, ".yml"),
     XML(XmlSerializedObject.class, XmlConfiguration.class, ".xml"),
     TEXT(TextSerializedObject.class, TextConfiguration.class, ".txt"),
-    PROPERTIES(PropertiesSerializedObject.class, PropertiesConfiguration.class, ".properties");
-    //SQL(SQLSerializedObject.class, SQLConfiguration.class, ".sqlData");
+    PROPERTIES(PropertiesSerializedObject.class, PropertiesConfiguration.class, ".properties"),
+    SQL(SQLSerializedObject.class, SQLConfiguration.class, ".sqlData");
 
     @NotNull private final Class<? extends SerializedObject> implClass;
     @NotNull private final Class<? extends Configuration> configClass;

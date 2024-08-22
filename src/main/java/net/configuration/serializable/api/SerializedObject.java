@@ -1,6 +1,7 @@
 package net.configuration.serializable.api;
 
 import com.google.gson.JsonParser;
+import net.configuration.main.Main;
 import net.configuration.serializable.impl.MapSerializable;
 import net.configuration.serializable.impl.SerializationHelper;
 import net.configuration.serializable.impl.types.*;
@@ -905,7 +906,7 @@ public interface SerializedObject extends ObjectSerializer{
                 case JSON -> obj = new JsonSerializedObject(JsonParser.parseString(strData).getAsJsonObject(), forClass);
                 case YAML -> obj = new YamlSerializedObject(YamlConfiguration.loadConfigurationFromString(strData), forClass);
                 case TEXT -> obj = new TextSerializedObject(strData.substring(1, strData.length() - 1), forClass);
-                //case SQL -> obj = new SQLSerializedObject(Main.getDefaultConnection(), strData, forClass);
+                case SQL -> obj = new SQLSerializedObject(Main.getDefaultConnection(), strData, forClass);
 
                 case PROPERTIES -> {
                     Properties prop = new Properties();

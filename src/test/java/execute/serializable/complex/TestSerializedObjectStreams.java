@@ -4,6 +4,7 @@ import net.configuration.serializable.api.Creator;
 import net.configuration.serializable.api.SerializableType;
 import net.configuration.serializable.api.SerializationException;
 import net.configuration.serializable.api.SerializedObject;
+import net.configuration.serializable.impl.types.SQLSerializedObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -50,7 +51,9 @@ class TestSerializedObjectStreams {
 
 
         assertTrue(file.delete());
-
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
 }

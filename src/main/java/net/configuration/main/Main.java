@@ -15,7 +15,9 @@ public final class Main {
 
     /*
 
-    TODO: Add SQL Serializable and Config
+    TODO: Add SQL Config
+    TODO: Document the whole serialization classes (especially the impl classes)
+    TODO: Document the whole config classes (with impl)
      */
 
     private static SQLConnection defaultCon;
@@ -29,7 +31,7 @@ public final class Main {
         if(defaultCon != null)
             return defaultCon;
 
-        try{
+        /*try{
             Path dataFolderPath = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).toPath();
             File file = new File(dataFolderPath.toFile().getAbsolutePath() + File.separator + "defaultSQLConnection.properties");
 
@@ -42,7 +44,12 @@ public final class Main {
 
         }catch(Exception e){
             throw new SerializationException(e);
-        }
+        }*/
+        defaultCon = new SQLConnection("127.0.0.1", 3306, "root", "", "test");
+        return defaultCon;
     }
 
+    public static void setDefaultConnection(@NotNull SQLConnection defaultCon) {
+        Main.defaultCon = defaultCon;
+    }
 }

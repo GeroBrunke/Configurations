@@ -2,6 +2,8 @@ package execute.serializable.simple;
 
 import net.configuration.serializable.api.SerializableType;
 import net.configuration.serializable.api.SerializedObject;
+import net.configuration.serializable.impl.TupleSerializable;
+import net.configuration.serializable.impl.types.SQLSerializedObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -33,6 +35,10 @@ class TestSerializedObject {
         assertEquals(a, obj.getByte().orElse((byte) -1));
         assertEquals(b, obj.getByte("b").orElse((byte) -1));
         assertEquals(a, obj.getByte().orElse((byte) -1));
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -54,6 +60,10 @@ class TestSerializedObject {
         assertEquals(a, obj.getShort().orElse((short) -1));
         assertEquals(b, obj.getShort("b").orElse((short) -1));
         assertEquals(a, obj.getShort().orElse((short) -1));
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -75,6 +85,10 @@ class TestSerializedObject {
         assertEquals(a, obj.getInt().orElse(-1));
         assertEquals(b, obj.getInt("b").orElse(-1));
         assertEquals(a, obj.getInt().orElse(-1));
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -96,6 +110,10 @@ class TestSerializedObject {
         assertEquals(a, obj.getLong().orElse(-1L));
         assertEquals(b, obj.getLong("b").orElse(-1L));
         assertEquals(a, obj.getLong().orElse(-1L));
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -117,6 +135,10 @@ class TestSerializedObject {
         assertEquals(a, obj.getChar().orElse((char) -1));
         assertEquals(b, obj.getChar("b").orElse((char) -1));
         assertEquals(a, obj.getChar().orElse((char) -1));
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -138,6 +160,10 @@ class TestSerializedObject {
         assertEquals(a, obj.getFloat().orElse(-1F));
         assertEquals(b, obj.getFloat("b").orElse(-1F));
         assertEquals(a, obj.getFloat().orElse(-1F));
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -159,6 +185,10 @@ class TestSerializedObject {
         assertEquals(a, obj.getDouble().orElse(-1D));
         assertEquals(b, obj.getDouble("b").orElse(-1D));
         assertEquals(a, obj.getDouble().orElse(-1D));
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -180,6 +210,10 @@ class TestSerializedObject {
         assertEquals(a, obj.getBoolean().orElse(!a));
         assertEquals(b, obj.getBoolean("b").orElse(!b));
         assertEquals(a, obj.getBoolean().orElse(!a));
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -201,6 +235,10 @@ class TestSerializedObject {
         assertEquals(a, obj.getString().orElse(""));
         assertEquals(b, obj.getString("b").orElse(""));
         assertEquals(a, obj.getString().orElse(""));
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -219,6 +257,10 @@ class TestSerializedObject {
         assertTrue(obj.getNull().isPresent());
         assertTrue(obj.getNull("b").isPresent());
         assertTrue(obj.getNull().isPresent());
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -240,6 +282,10 @@ class TestSerializedObject {
         assertEquals(a, obj.getEnum(SerializableType.class).orElse(null));
         assertEquals(b, obj.getEnum("b", SerializableType.class).orElse(null));
         assertEquals(a, obj.getEnum(SerializableType.class).orElse(null));
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -261,6 +307,10 @@ class TestSerializedObject {
         assertArrayEquals(a.toArray(), obj.getIntList().orElse(List.of()).toArray());
         assertArrayEquals(b.toArray(), obj.getIntList("b").orElse(List.of()).toArray());
         assertArrayEquals(a.toArray(), obj.getIntList().orElse(List.of()).toArray());
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -284,6 +334,10 @@ class TestSerializedObject {
         assertArrayEquals(a.toArray(), obj.getByteList().orElse(List.of()).toArray());
         assertArrayEquals(b.toArray(), obj.getByteList("b").orElse(List.of()).toArray());
         assertArrayEquals(a.toArray(), obj.getByteList().orElse(List.of()).toArray());
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -305,6 +359,10 @@ class TestSerializedObject {
         assertArrayEquals(a.toArray(), obj.getDoubleList().orElse(List.of()).toArray());
         assertArrayEquals(b.toArray(), obj.getDoubleList("b").orElse(List.of()).toArray());
         assertArrayEquals(a.toArray(), obj.getDoubleList().orElse(List.of()).toArray());
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -326,6 +384,10 @@ class TestSerializedObject {
         assertArrayEquals(a.toArray(), obj.getLongList().orElse(List.of()).toArray());
         assertArrayEquals(b.toArray(), obj.getLongList("b").orElse(List.of()).toArray());
         assertArrayEquals(a.toArray(), obj.getLongList().orElse(List.of()).toArray());
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -347,6 +409,10 @@ class TestSerializedObject {
         assertArrayEquals(a.toArray(), obj.getStringList().orElse(List.of()).toArray());
         assertArrayEquals(b.toArray(), obj.getStringList("b").orElse(List.of()).toArray());
         assertArrayEquals(a.toArray(), obj.getStringList().orElse(List.of()).toArray());
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -368,6 +434,10 @@ class TestSerializedObject {
         assertArrayEquals(a, obj.getArray(String.class).orElse(new String[0]));
         assertArrayEquals(b, obj.getArray("b", String.class).orElse(new String[0]));
         assertArrayEquals(a, obj.getArray(String.class).orElse(new String[0]));
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+        }
     }
 
     @ParameterizedTest
@@ -410,6 +480,11 @@ class TestSerializedObject {
 
         for(var e : b.entrySet()){
             assertEquals(e.getValue(), firstB.get(e.getKey()));
+        }
+
+        if(obj instanceof SQLSerializedObject sql){
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), sql.getTableName()));
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), SQLSerializedObject.getTableName(TupleSerializable.class)));
         }
 
     }
