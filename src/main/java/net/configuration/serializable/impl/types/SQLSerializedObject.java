@@ -6,11 +6,9 @@ import net.configuration.main.Main;
 import net.configuration.network.SQLConnection;
 import net.configuration.serializable.api.*;
 import net.configuration.serializable.impl.NullSerializable;
-import net.configuration.serializable.impl.TupleSerializable;
 import org.apache.commons.lang3.ClassUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -309,7 +307,7 @@ public class SQLSerializedObject extends ByteSerializedObject {
             String key = data[0];
             String table = data[1];
 
-            SQLSerializedObject nested = new SQLSerializedObject(this.connection, key, table, this.getClass(table, key));
+            SQLSerializedObject nested = new SQLSerializedObject(this.connection, key, table, getClass(this.connection, table, key));
             SerializableObject obj = Creator.getCreator(clazz).read(nested);
             list.add(obj);
         }
@@ -441,7 +439,7 @@ public class SQLSerializedObject extends ByteSerializedObject {
 
                     if(this.foreignKeys.containsKey(name) && value != null){
                         String table = this.foreignKeys.get(name);
-                        SQLSerializedObject nested = new SQLSerializedObject(this.connection, value, table, this.getClass(table, value));
+                        SQLSerializedObject nested = new SQLSerializedObject(this.connection, value, table, getClass(this.connection, table, value));
                         this.complexObjects.put(name, nested);
 
                     }else{
@@ -473,12 +471,12 @@ public class SQLSerializedObject extends ByteSerializedObject {
                     sql.append(", ").append(key).append(" ").append(sqlType);
 
                 }else{
-                    sqlType = "LONGTEXT";//sqlDataTypes.get(type).get(0);
-                    sql.append(", ").append(key).append(" ").append(sqlType);//.append(" NOT NULL");
+                    sqlType = "LONGTEXT";
+                    sql.append(", ").append(key).append(" ").append(sqlType);
                 }
             }else{
                 sqlType = "LONGTEXT";
-                sql.append(", ").append(key).append(" ").append(sqlType);//.append(" NOT NULL");
+                sql.append(", ").append(key).append(" ").append(sqlType);
             }
 
         }
@@ -564,8 +562,8 @@ public class SQLSerializedObject extends ByteSerializedObject {
     }
 
     @NotNull
-    private Class<?> getClass(@NotNull String table, @NotNull String key){
-        try(PreparedStatement pst = this.connection.getConnection().prepareStatement("SELECT class FROM " + table + " WHERE id = '" + key + "'")){
+    public static Class<?> getClass(@NotNull SQLConnection connection, @NotNull String table, @NotNull String key){
+        try(PreparedStatement pst = connection.getConnection().prepareStatement("SELECT class FROM " + table + " WHERE id = '" + key + "'")){
             ResultSet rs = pst.executeQuery();
             if(rs.next()){
                 return Class.forName(rs.getString("class"));

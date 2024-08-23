@@ -1,12 +1,12 @@
 <?xml version = "1.0"?>
 <config>
     <boolean>true</boolean>
-    <integer>5</integer>
-    <char>d</char>
+    <intValue>5</intValue>
+    <charValue>d</charValue>
     <short>-3</short>
-    <float>3.14</float>
-    <double>-0.271</double>
-    <long>3761281901</long>
+    <floatValue>3.14</floatValue>
+    <doubleValue>-0.271</doubleValue>
+    <longValue>3761281901</longValue>
     <byte>98</byte>
     <string>Hello World</string>
     <collection>

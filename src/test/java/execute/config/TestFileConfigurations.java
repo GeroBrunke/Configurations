@@ -3,7 +3,10 @@ package execute.config;
 import execute.serializable.complex.TestObject;
 import net.configuration.config.Configuration;
 import net.configuration.config.FileConfiguration;
+import net.configuration.config.impl.SQLConfiguration;
+import net.configuration.main.Main;
 import net.configuration.serializable.api.SerializableType;
+import net.configuration.serializable.impl.types.SQLSerializedObject;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.TestInstance;
@@ -21,13 +24,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestFileConfigurations {
 
+    private static final String SQL_TABLE = "test_config_table";
+
     private static final String BOOLEAN = "boolean";
-    private static final String INTEGER = "integer";
+    private static final String INTEGER = "intValue";
     private static final String SHORT = "short";
-    private static final String CHAR = "char";
-    private static final String FLOAT = "float";
-    private static final String DOUBLE = "double";
-    private static final String LONG = "long";
+    private static final String CHAR = "charValue";
+    private static final String FLOAT = "floatValue";
+    private static final String DOUBLE = "doubleValue";
+    private static final String LONG = "longValue";
     private static final String BYTE = "byte";
     private static final String STRING = "string";
     private static final String COLLECTION = "collection";
@@ -42,7 +47,8 @@ class TestFileConfigurations {
         File file = this.loadFile(this.fileNames.get(type));
         assertTrue(file.exists());
 
-        Configuration config = FileConfiguration.loadConfig(file);
+        Configuration config = type == SerializableType.SQL ?
+                new SQLConfiguration(Main.getDefaultConnection(), SQL_TABLE, UUID.randomUUID()) : FileConfiguration.loadConfig(file);
         config.setBoolean(BOOLEAN, false);
         config.setInt(INTEGER, -7);
         config.setShort(SHORT, (short) 182);
@@ -69,6 +75,10 @@ class TestFileConfigurations {
         this.restoreDefaultValues(config);
         this.checkForDefaultValues(config);
 
+        if(config instanceof SQLConfiguration sql){
+            assertTrue(sql.deleteTable());
+        }
+
     }
 
     @ParameterizedTest
@@ -78,7 +88,8 @@ class TestFileConfigurations {
         File file = this.loadFile(this.fileNames.get(type));
         assertTrue(file.exists());
 
-        Configuration config = FileConfiguration.loadConfig(file);
+        Configuration config = type == SerializableType.SQL ?
+                new SQLConfiguration(Main.getDefaultConnection(), SQL_TABLE, UUID.randomUUID()) : FileConfiguration.loadConfig(file);
 
         //set and get all values for this config
         Integer[] newArray = new Integer[]{19,8,7,6};
@@ -97,7 +108,9 @@ class TestFileConfigurations {
         this.restoreDefaultValues(config);
         this.checkForDefaultValues(config);
 
-
+        if(config instanceof SQLConfiguration sql){
+            assertTrue(sql.deleteTable());
+        }
     }
 
     @ParameterizedTest
@@ -106,7 +119,8 @@ class TestFileConfigurations {
     void testComplexConfig(@NotNull SerializableType type) throws URISyntaxException {
         File file = this.loadFile(this.fileNames.get(type));
         assertTrue(file.exists());
-        Configuration config = FileConfiguration.loadConfig(file);
+        Configuration config = type == SerializableType.SQL ?
+                new SQLConfiguration(Main.getDefaultConnection(), SQL_TABLE, UUID.randomUUID()) : FileConfiguration.loadConfig(file);
 
         TestObject obj = new TestObject(1.1F);
         String val = "Hello World";
@@ -125,6 +139,10 @@ class TestFileConfigurations {
         this.restoreDefaultValues(config);
         this.checkForDefaultValues(config);
 
+        if(config instanceof SQLConfiguration sql){
+            assertTrue(sql.deleteTable());
+            SQLSerializedObject.deleteTable(sql.getConnection(), SQLSerializedObject.getTableName(TestObject.class));
+        }
     }
 
     @ParameterizedTest
@@ -134,7 +152,8 @@ class TestFileConfigurations {
         File file = this.loadFile(this.fileNames.get(type));
         assertTrue(file.exists());
 
-        Configuration config = FileConfiguration.loadConfig(file);
+        Configuration config = type == SerializableType.SQL ?
+                new SQLConfiguration(Main.getDefaultConnection(), SQL_TABLE, UUID.randomUUID()) : FileConfiguration.loadConfig(file);
 
         String val = "Hello World";
         int z = 9;
@@ -156,6 +175,10 @@ class TestFileConfigurations {
 
         this.restoreDefaultValues(config);
         this.checkForDefaultValues(config);
+
+        if(config instanceof SQLConfiguration sql){
+            assertTrue(sql.deleteTable());
+        }
     }
 
     @ParameterizedTest
@@ -165,7 +188,8 @@ class TestFileConfigurations {
         File file = this.loadFile(this.fileNames.get(type));
         assertTrue(file.exists());
 
-        Configuration config = FileConfiguration.loadConfig(file);
+        Configuration config = type == SerializableType.SQL ?
+                new SQLConfiguration(Main.getDefaultConnection(), SQL_TABLE, UUID.randomUUID()) : FileConfiguration.loadConfig(file);
 
         config.setBoolean(BOOLEAN, false);
         config.setInt(INTEGER, -7);
@@ -181,6 +205,9 @@ class TestFileConfigurations {
 
         this.checkForDefaultValues(config);
 
+        if(config instanceof SQLConfiguration sql){
+            assertTrue(sql.deleteTable());
+        }
 
     }
 
@@ -231,6 +258,7 @@ class TestFileConfigurations {
         fileNames.put(SerializableType.TEXT, "testConfigText.txt");
         fileNames.put(SerializableType.XML, "testConfigXml.xml");
         fileNames.put(SerializableType.YAML, "testConfigYml.yml");
+        fileNames.put(SerializableType.SQL, "testConfigSQL.sqlData");
 
         return fileNames;
     }

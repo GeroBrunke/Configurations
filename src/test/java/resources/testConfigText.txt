@@ -1,1 +1,1 @@
-{boolean:true<br>string:Hello World<br>double:-0.271<br>byte:98<br>char:d<br>short:-3<br>integer:5<br>float:3.14<br>long:3761281901}
+{boolean:true<br>string:Hello World<br>doubleValue:-0.271<br>byte:98<br>charValue:d<br>short:-3<br>intValue:5<br>floatValue:3.14<br>longValue:3761281901}
