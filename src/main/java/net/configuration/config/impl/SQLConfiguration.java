@@ -271,10 +271,9 @@ public class SQLConfiguration implements Configuration {
                 ((SerializableObject) e).write(nested);
                 nested.flush();
 
-                this.complex.put(path, new Tuple<>(nested.getTableName(), nested.getPrimaryKey().toString()));
                 str.append(",").append(nested.getPrimaryKey()).append(":").append(nested.getTableName());
             }
-            str = new StringBuilder(str.substring(4));
+            str = new StringBuilder(str.substring(1));
             this.setString(path, str.toString());
 
         }else if(classOfT.isEnum()){
@@ -489,7 +488,7 @@ public class SQLConfiguration implements Configuration {
             ResultSet rs = pst.executeQuery();
             while(rs.next()){
                 int coulmnCnt = rs.getMetaData().getColumnCount();
-                for(int i = 3; i <= coulmnCnt; i++){
+                for(int i = 2; i <= coulmnCnt; i++){
                     String name = rs.getMetaData().getColumnName(i);
                     String value = rs.getString(i);
 

@@ -15,7 +15,7 @@ class TestConfigurable {
     @DisplayName("Test Configurable")
     void testConfigurable(){
         ConfigurableTestObject test = new ConfigurableTestObject();
-        String path = Objects.requireNonNull(getClass().getResource("/resources/testConfigurable.json")).getFile();
+        String path = Objects.requireNonNull(getClass().getResource("/resources/testConfigurable.json")).getFile().replace("%20", " ");
         test.loadConfig(path, false);
 
         Configuration config = test.getConfig();

@@ -178,6 +178,7 @@ class TestFileConfigurations {
 
         if(config instanceof SQLConfiguration sql){
             assertTrue(sql.deleteTable());
+            assertTrue(SQLSerializedObject.deleteTable(sql.getConnection(), SQLSerializedObject.getTableName(TestObject.class)));
         }
     }
 
@@ -190,6 +191,23 @@ class TestFileConfigurations {
 
         Configuration config = type == SerializableType.SQL ?
                 new SQLConfiguration(Main.getDefaultConnection(), SQL_TABLE, UUID.randomUUID()) : FileConfiguration.loadConfig(file);
+
+        //if the config is saved as sql, first insert the default values into the table
+        if(type == SerializableType.SQL){
+            config.setBoolean(BOOLEAN, true);
+            config.setInt(INTEGER, 5);
+            config.setChar(CHAR, 'd');
+            config.setShort(SHORT, (short) -3);
+            config.setFloat(FLOAT, 3.14F);
+            config.setDouble(DOUBLE, -0.271);
+            config.setLong(LONG, 3761281901L);
+            config.setByte(BYTE, (byte) 98);
+            config.setString(STRING, "Hello World");
+            config.setList(COLLECTION, List.of(1,2,3,4));
+
+            assertTrue(config.save());
+        }
+
 
         config.setBoolean(BOOLEAN, false);
         config.setInt(INTEGER, -7);

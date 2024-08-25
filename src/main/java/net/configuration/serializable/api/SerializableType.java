@@ -59,9 +59,9 @@ public enum SerializableType {
     @NotNull
     public SerializedObject createEmpty(){
         try {
-            Constructor<?> con = this.implClass.getDeclaredConstructor();
+            Constructor<? extends SerializedObject> con = this.implClass.getDeclaredConstructor();
             con.setAccessible(true);
-            return (SerializedObject) con.newInstance();
+            return con.newInstance();
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new SerializationException(e);
         }
