@@ -224,7 +224,10 @@ class TestFileConfigurations {
         this.checkForDefaultValues(config);
 
         if(config instanceof SQLConfiguration sql){
+            assertTrue(sql.deleteEntry());
             assertTrue(sql.deleteTable());
+            sql.getConnection().disconnect();
+            assertFalse(sql.getConnection().isConnected());
         }
 
     }

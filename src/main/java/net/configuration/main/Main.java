@@ -1,22 +1,12 @@
 package net.configuration.main;
 
 import net.configuration.network.SQLConnection;
-import net.configuration.serializable.api.Creator;
-import net.configuration.serializable.api.SerializableType;
-import net.configuration.serializable.api.SerializationException;
-import net.configuration.serializable.api.SerializedObject;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.nio.file.Path;
 
 public final class Main {
 
     /*
-
-    TODO: Add SQL Config
-    TODO: Document the whole serialization classes (especially the impl classes)
+    TODO: Add SQL ConfigODO: Document the whole serialization classes (especially the impl classes)
     TODO: Document the whole config classes (with impl)
      */
 

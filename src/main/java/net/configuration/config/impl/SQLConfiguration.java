@@ -35,22 +35,31 @@ public class SQLConfiguration implements Configuration {
         this.connection = con;
         this.table = table;
         this.key = key;
-        this.foreignKeys = this.getForeignKeys();
+        this.foreignKeys = this.getForeignKeys0();
 
         this.readFromTable();
     }
 
     /**
+     * Delete the table entry that represents the instance of this object.
      *
-     * @return
+     * @return True iff the entry was successfully deleted.
      */
     public boolean deleteEntry(){
+        try{
+            String sql = "DELETE FROM " + this.table + " WHERE id = '" + this.key + "'";
+            this.connection.update(sql);
+            return true;
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         return false;
     }
 
     /**
+     * Delete the table associated with this configuration.
      *
-     * @return
+     * @return True iff the table was successfully deleted.
      */
     public boolean deleteTable(){
         try(PreparedStatement pst = connection.getConnection().prepareStatement("DROP TABLE " + this.table)){
@@ -60,6 +69,11 @@ public class SQLConfiguration implements Configuration {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @SuppressWarnings("unused")
+    public @NotNull Map<String, String> getForeignKeys() {
+        return foreignKeys;
     }
 
     public @NotNull SQLConnection getConnection() {
@@ -75,7 +89,7 @@ public class SQLConfiguration implements Configuration {
 
     @Override
     public boolean reload() {
-        this.foreignKeys = this.getForeignKeys();
+        this.foreignKeys = this.getForeignKeys0();
         this.readFromTable();
         return true;
     }
@@ -360,6 +374,7 @@ public class SQLConfiguration implements Configuration {
             ((SerializableObject) value).write(obj);
             obj.flush();
 
+            this.complex.put(path, new Tuple<>(obj.getTableName(), obj.getPrimaryKey().toString()));
             this.setString(path, obj.getPrimaryKey().toString());
 
         }else if(classOfT.isEnum()){
@@ -372,6 +387,7 @@ public class SQLConfiguration implements Configuration {
             throw new ConfigurationException("Not a serializable object: " + classOfT);
         }
     }
+
 
     protected String convertPrimitiveList(@NotNull List<?> list){
         StringBuilder entry = new StringBuilder();
@@ -492,15 +508,6 @@ public class SQLConfiguration implements Configuration {
                     String name = rs.getMetaData().getColumnName(i);
                     String value = rs.getString(i);
 
-                    /*if(this.foreignKeys.containsKey(name) && value != null){
-                        String tableName = this.foreignKeys.get(name);
-                        SQLSerializedObject nested = new SQLSerializedObject(this.connection, value, tableName,
-                                SQLSerializedObject.getClass(this.connection, tableName, value));
-                        this.complexObjects.put(name, nested);
-
-                    }else{
-                        this.data.put(name, value);
-                    }*/
                     this.data.put(name, value);
                 }
             }
@@ -510,7 +517,7 @@ public class SQLConfiguration implements Configuration {
         }
     }
     @NotNull
-    private Map<String, String> getForeignKeys() {
+    private Map<String, String> getForeignKeys0() {
         Map<String, String> map = new HashMap<>();
         if(!this.connection.isConnected())
             return map;

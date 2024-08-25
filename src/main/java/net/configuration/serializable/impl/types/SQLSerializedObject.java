@@ -109,8 +109,9 @@ public class SQLSerializedObject extends ByteSerializedObject {
         this.primaryKey = UUID.fromString(key);
         this.tableName = TABLE_PREFIX + forClass.getSimpleName();
         this.connection = con;
-        if(!this.connection.isConnected())
-            this.connection.connect();
+        if(!this.connection.isConnected() && !this.connection.connect()) {
+            throw new SerializationException("Not connected to SQL");
+        }
 
         try {
             this.foreignKeys = this.getForeignKeys();

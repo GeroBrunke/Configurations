@@ -9,18 +9,13 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class SimpleCreatorImpl<T extends SerializableObject> implements Creator<T> {
-
-    private final Class<T> classOfT;
-
-    public SimpleCreatorImpl(@NotNull Class<T> classOfT){
-        this.classOfT = classOfT;
-    }
+public record SimpleCreatorImpl<T extends SerializableObject>(Class<T> classOfT) implements Creator<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public @NotNull T read(@NotNull SerializedObject src) {
-        if(src.getForClass().isEmpty()){
+    public @NotNull
+    T read(@NotNull SerializedObject src) {
+        if (src.getForClass().isEmpty()) {
             src.setForClass(classOfT);
         }
 
@@ -28,7 +23,7 @@ public class SimpleCreatorImpl<T extends SerializableObject> implements Creator<
         return (T) instance.read(src);
     }
 
-    private T createInstance(){
+    private T createInstance() {
         try {
             Constructor<T> con = classOfT.getDeclaredConstructor();
             con.setAccessible(true);

@@ -460,7 +460,7 @@ public interface SerializedObject extends ObjectSerializer{
             Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) classOfT;
             Optional<Enum> opt = this.getEnum(name, e);
             if(opt.isPresent()){
-                T val = (T) SerializationHelper.toEnum(opt.get());
+                var val = (T) SerializationHelper.toEnum(opt.get());
                 return Optional.of(val);
             }
 

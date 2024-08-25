@@ -734,12 +734,7 @@ public abstract class AbstractSerializedObject implements SerializedObject {
                     return (T[]) array;
                 }
 
-                Byte[] array = new Byte[list.size()];
-                int i = 0;
-                for(Byte val : list){
-                    array[i++] = val;
-                }
-                return (T[]) array;
+                return (T[]) list.toArray(new Byte[0]);
 
             }
 
@@ -774,13 +769,11 @@ public abstract class AbstractSerializedObject implements SerializedObject {
         if(classOfT == Byte.class || classOfT == Boolean.class){
             List<Byte> list = new ArrayList<>(array.length);
             for(T val : array){
-                byte bVal;
-                if(classOfT == Boolean.class)
-                    bVal = (boolean) val ? (byte) 1 : (byte) 0;
-                else
-                    bVal = (byte) val;
-
-                list.add(bVal);
+                if(classOfT == Boolean.class){
+                    list.add((boolean) val ? (byte) 1 : (byte) 0);
+                }else{
+                    list.add((byte) val);
+                }
             }
 
             this.setByteList(name, list);
@@ -809,7 +802,13 @@ public abstract class AbstractSerializedObject implements SerializedObject {
 
             this.setDoubleList(name, list);
 
-        }else if(classOfT == Character.class){
+        }
+
+        this.setCharArray(name, array, classOfT);
+    }
+
+    private <T> void setCharArray(@NotNull String name, T @NotNull[] array, @NotNull Class<T> classOfT){
+        if(classOfT == Character.class){
             List<String> list = new ArrayList<>(array.length);
             for(T val : array){
                 list.add(String.valueOf((char) val));
@@ -818,5 +817,4 @@ public abstract class AbstractSerializedObject implements SerializedObject {
             this.setStringList(name, list);
         }
     }
-
 }
