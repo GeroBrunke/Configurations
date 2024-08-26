@@ -388,7 +388,13 @@ public class SQLConfiguration implements Configuration {
         }
     }
 
-
+    /**
+     * Convert a list of primitive objects or strings into a unique string representation. For example, the integer list
+     * [1, 2, 3, 4] is converted to the string "1, 2, 3, 4".
+     *
+     * @param list The primitive list to convert.
+     * @return The string representation of the list.
+     */
     protected String convertPrimitiveList(@NotNull List<?> list){
         StringBuilder entry = new StringBuilder();
         for(var e : list){
@@ -399,6 +405,14 @@ public class SQLConfiguration implements Configuration {
         return entry.toString();
     }
 
+    /**
+     * Retrieve the primitive list from its string representation. The string "1, 2, 3, 4" is converted to the
+     * integer list [1, 2, 3, 4].
+     *
+     * @param elem The string representation of a primitive list.
+     * @param classOfT The type of elements in the list.
+     * @return The actual java representation of the list.
+     */
     @SuppressWarnings("unchecked")
     protected <T> List<T> getPrimitiveList(@NotNull String elem, @NotNull Class<T> classOfT){
         String[] d = elem.split(", ");
@@ -410,6 +424,13 @@ public class SQLConfiguration implements Configuration {
         return res;
     }
 
+    /**
+     * Insert the given enum value list into this object by creating a unique string representation of the enum
+     * name list. For example, the list of colors [RED, GREEN, BLUE] is converted to "RED, GREEN, BLUE".
+     *
+     * @param path The path where the list is inserted in this object.
+     * @param list The actual list of enum values to insert.
+     */
     protected void setEnumList(@NotNull String path, @NotNull List<?> list){
         List<String> names = new ArrayList<>();
         for(var e : list){
@@ -418,6 +439,14 @@ public class SQLConfiguration implements Configuration {
         this.setString(path, this.convertPrimitiveList(names));
     }
 
+    /**
+     * Retrieve the enum list from the list of enum value names. For example the string list ["RED", "BLUE", "GREEN"] is
+     * converted to the actual enum list [RED, BLUE, GREEN].
+     *
+     * @param names The list of enum names.
+     * @param classOfT The enum class to convert to.
+     * @return The list of actual enums represented by the given names list.
+     */
     @SuppressWarnings("unchecked")
     private <T> List<T> getEnumList(@NotNull List<String> names, @NotNull Class<T> classOfT){
         List<T> res = new ArrayList<>(names.size());
@@ -433,6 +462,13 @@ public class SQLConfiguration implements Configuration {
         return res;
     }
 
+    /**
+     * Convert the given string to the actual enum value with that given name.
+     *
+     * @param elem The name of the enum value.
+     * @param classOfT The enum type represented by the name.
+     * @return The actual enum value of given type with that name.
+     */
     @NotNull
     @SuppressWarnings("unchecked")
     private <T> T convertToEnum(@NotNull String elem, @NotNull Class<T> classOfT){
@@ -443,6 +479,9 @@ public class SQLConfiguration implements Configuration {
         }
     }
 
+    /**
+     * Create the SQL table based on the names and values provided by the underlying data map.
+     */
     private void createTable(){
         if(!this.connection.isConnected())
             this.connection.connect();
@@ -469,6 +508,9 @@ public class SQLConfiguration implements Configuration {
         this.connection.update(sql.toString());
     }
 
+    /**
+     * Insert the current configuration data into the linked SQL table.
+     */
     private void writeToTable(){
         String sql = "INSERT INTO " + this.table + "(types) VALUES (values)";
 
@@ -494,6 +536,10 @@ public class SQLConfiguration implements Configuration {
         this.connection.update(sql);
     }
 
+    /**
+     * Read this' configs values from the linked table where the id column has the same value as this' instance's
+     * UUID.
+     */
     private void readFromTable(){
         if(!this.connection.isConnected())
             this.connection.connect();
@@ -516,6 +562,12 @@ public class SQLConfiguration implements Configuration {
             //table does not exist
         }
     }
+
+    /**
+     * Fetch all the foreign key constraints from the linked table.
+     *
+     * @return A map containing the found foreign keys mapped to the table the key is pointing to.
+     */
     @NotNull
     private Map<String, String> getForeignKeys0() {
         Map<String, String> map = new HashMap<>();

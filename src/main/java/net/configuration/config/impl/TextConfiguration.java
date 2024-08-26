@@ -195,6 +195,11 @@ public class TextConfiguration extends ByteConfiguration {
         return str.toString();
     }
 
+    /**
+     * Read the file data from the file that this config is based on and parse it into this config's data map.
+     *
+     * @throws IOException If the file data could not be read,
+     */
     private void load() throws IOException {
         String data = Files.readString(this.file.toPath(), StandardCharsets.UTF_8);
         if(!data.isEmpty())

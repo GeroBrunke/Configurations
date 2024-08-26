@@ -309,6 +309,12 @@ public class ByteConfiguration extends FileConfiguration {
         }
     }
 
+    /**
+     * Convert the current config state into a byte[] representation. The resulting array has the minimum size
+     * needed to represent the whole data such that no dead space will be left inside the array.
+     * 
+     * @return The byte[] representation of the current config state.
+     */
     private byte[] toByteArray(){
         ByteBuffer buffer = ByteBuffer.allocate(ByteSerializedObject.BUFFER_SIZE);
         for(var e : this.config.entrySet()){
@@ -331,6 +337,14 @@ public class ByteConfiguration extends FileConfiguration {
 
     }
 
+    /**
+     * Convert a list of primitive objects (primitive by the definition of the JVM or strings) to a string representation.
+     * For example, a list of ints [1,2,3,4] will be represented by the string "1, 2, 3, 4".
+     * 
+     * @param list The list to convert.
+     * @return The unique string representation of the given primitive list.
+     * @see ByteConfiguration#getPrimitiveList(String, Class) 
+     */
     protected String convertPrimitiveList(@NotNull List<?> list){
         StringBuilder entry = new StringBuilder();
         for(var e : list){
@@ -341,6 +355,15 @@ public class ByteConfiguration extends FileConfiguration {
         return entry.toString();
     }
 
+    /**
+     * Retrieve a list of primitive objects (primitive by the definition of the JVM or strings) from the given
+     * string representation of the list. For example, the string "1, 2, 3, 4" will be returned as an int list
+     * [1, 2, 3, 4].
+     *
+     * @param elem The string representation of the primitive list.
+     * @param classOfT The type of elements in the resulting list.
+     * @return A list instance containing the data from the string representation.
+     */
     @SuppressWarnings("unchecked")
     protected <T> List<T> getPrimitiveList(@NotNull String elem, @NotNull Class<T> classOfT){
         String[] d = elem.split(", ");
@@ -352,6 +375,14 @@ public class ByteConfiguration extends FileConfiguration {
         return res;
     }
 
+    /**
+     * Set the string representation of an enum list inside this config at the given path. The string representation
+     * is determined by the enum name of each list's element. For example the list of colors [RED, GREEN, BLUE] will
+     * be written as the string "RED, GREEN, BLUE".
+     *
+     * @param path The path to write the string representation to.
+     * @param list The list of enum values to write.
+     */
     protected void setEnumList(@NotNull String path, @NotNull List<?> list){
         List<String> names = new ArrayList<>();
         for(var e : list){

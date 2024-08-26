@@ -201,17 +201,6 @@ public class JsonConfiguration extends FileConfiguration {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> List<T> getPrimitiveList(@NotNull JsonArray elem, @NotNull Class<T> classOfT){
-        List<T> res = new ArrayList<>(elem.size());
-        for(int i = 0; i < elem.size(); i++){
-            T val = (T) this.getPrimitive(classOfT, elem.get(i).getAsJsonPrimitive());
-            res.add(val);
-        }
-
-        return res;
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public <T> void setList(@NotNull String path, List<T> list) {
@@ -317,6 +306,24 @@ public class JsonConfiguration extends FileConfiguration {
     }
 
     /**
+     * Extract a list of primitive objects or strings from the given json array.
+     *
+     * @param elem The json array to deserialize.
+     * @param classOfT The type of elements in the list.
+     * @return A list containing the primitive objects from the json array.
+     */
+    @SuppressWarnings("unchecked")
+    private <T> List<T> getPrimitiveList(@NotNull JsonArray elem, @NotNull Class<T> classOfT){
+        List<T> res = new ArrayList<>(elem.size());
+        for(int i = 0; i < elem.size(); i++){
+            T val = (T) this.getPrimitive(classOfT, elem.get(i).getAsJsonPrimitive());
+            res.add(val);
+        }
+
+        return res;
+    }
+
+    /**
      * Get the {@link JsonElement} that is referenced by the given path.
      *
      * @param path A path to that object, that may contain child references.
@@ -354,6 +361,12 @@ public class JsonConfiguration extends FileConfiguration {
         return Optional.of(currentObject);
     }
 
+    /**
+     * Update the value of the given Json primitive to the given value.
+     *
+     * @param element The element whose value is updated.
+     * @param value The new primitive or string value.
+     */
     protected void updateJsonPrimitive(@NotNull JsonPrimitive element, @NotNull Object value){
         try {
             Field valueField = element.getClass().getDeclaredField("value");
@@ -364,6 +377,14 @@ public class JsonConfiguration extends FileConfiguration {
         }
     }
 
+    /**
+     * Set the value at the given path to the given value in this serialized objects instance. If an object
+     * already exists at the given path, then the value is updated, else the new path will be added to this
+     * instance's data object.
+     *
+     * @param path The path to write.
+     * @param value The value that should be associated with this path.
+     */
     protected void update(@NotNull String path, @NotNull Object value){
         Optional<JsonElement> opt = this.getSubMember(path);
         if(opt.isEmpty())
@@ -387,6 +408,13 @@ public class JsonConfiguration extends FileConfiguration {
             this.config.add(path, prim);
     }
 
+    /**
+     * Extract the primitive or string object from the given Json primitive.
+     *
+     * @param classOfT The type of the primitive that is extracted.
+     * @param elem The json element that stores the object.
+     * @return A java object representation of the primitive object inside the JSON element.
+     */
     private <T> Object getPrimitive(@NotNull Class<T> classOfT, @NotNull JsonPrimitive elem){
         if(classOfT == String.class){
             return elem.getAsString();
@@ -420,6 +448,12 @@ public class JsonConfiguration extends FileConfiguration {
         }
     }
 
+    /**
+     * Set a list of primitive or string objects into the given path.
+     *
+     * @param path The path the list is written to.
+     * @param list The list to write.
+     */
     protected <T> void setPrimitiveList(@NotNull String path, @NotNull List<T> list){
         JsonArray array = new JsonArray();
         for(T val : list){
@@ -446,6 +480,13 @@ public class JsonConfiguration extends FileConfiguration {
         this.config.add(path, array);
     }
 
+    /**
+     * Update the serializable object at the given path. The serializable object is written into another JSON
+     * object that will be added to this' object's JSON tree at the given path.
+     *
+     * @param path The path of the serialized version of the serializable object.
+     * @param value The new serializable object.
+     */
     protected void updateSerializable(@NotNull String path, @NotNull SerializableObject value){
         //new object
         JsonSerializedObject obj = new JsonSerializedObject(value.getClass());

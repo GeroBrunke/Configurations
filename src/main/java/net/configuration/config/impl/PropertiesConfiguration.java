@@ -329,6 +329,14 @@ public class PropertiesConfiguration extends FileConfiguration {
         }
     }
 
+    /**
+     * Convert a list of primitives or strings into a unique string representation. For example, the list of integers
+     * [1, 2, 3, 4] is represented by the resulting string "1, 2, 3, 4".
+     *
+     * @param list The list to convert to a string.
+     * @return The unique string representation of the list.
+     * @see PropertiesConfiguration#fromStringList(String, Class)
+     */
     private String toStringList(@NotNull List<?> list){
         StringBuilder entry = new StringBuilder();
         for(var e : list){
@@ -338,6 +346,15 @@ public class PropertiesConfiguration extends FileConfiguration {
         return entry.toString();
     }
 
+    /**
+     * Construct a list of primitives or strings based on the given string representation. For example the string
+     * "1, 2, 3, 4" is turned into the integer list [1, 2, 3, 4].
+     *
+     * @param elem The string representation of the list.
+     * @param classOfT The type of elements in the returned list.
+     * @return The list instance containing all the objects from the string representation.
+     * @see PropertiesConfiguration#toStringList(List)
+     */
     @SuppressWarnings("unchecked")
     private <T> List<T> fromStringList(@NotNull String elem, @NotNull Class<T> classOfT){
         String[] d = elem.split(", ");

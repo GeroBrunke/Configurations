@@ -12,6 +12,12 @@ import java.util.Optional;
 
 public interface Creator<T extends SerializableObject> {
 
+    /**
+     * Read the object of type T from the given serialized object.
+     *
+     * @param src The serialized version of an instance of T.
+     * @return The deserialized object T stored in the given object.
+     */
     @NotNull
     T read(@NotNull SerializedObject src);
 
@@ -101,6 +107,14 @@ public interface Creator<T extends SerializableObject> {
         }
     }
 
+    /**
+     * Get the instance of the {@link Creator} field from the given class. Note that for this to work, the field
+     * has to be static and final and annotated with {@link SerializationAPI}.
+     *
+     * @param classOfT The class to extract the creator field value from.
+     * @return The instance of the creator for the given class.
+     * @see SerializationAPI
+     */
     @SuppressWarnings("unchecked")
     @NotNull static <T extends SerializableObject> Creator<T> getCreator(@NotNull Class<T> classOfT){
         try{
@@ -120,6 +134,14 @@ public interface Creator<T extends SerializableObject> {
         }
     }
 
+    /**
+     * Get the constructor instance of the given class that requires the given set of parameters.
+     *
+     * @param classOfT The implementation class for a {@link SerializableObject} whose constructor should be fetched.
+     * @param params The constructor parameters for the declared constructor.
+     * @return An optional containing the desired constructor or an empty constructor if no such constructor exists
+     * in the provided class.
+     */
     @NotNull
     private Optional<Constructor<T>> getConstructor(Class<T> classOfT, Class<?>... params) {
         try {

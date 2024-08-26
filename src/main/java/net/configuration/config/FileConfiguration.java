@@ -65,6 +65,13 @@ public abstract class FileConfiguration implements Configuration{
     }
 
 
+    /**
+     * Fetch the data field of the given serialized object.
+     *
+     * @param obj The serialized object to retrieve the data field from.
+     * @return THe instance of the data field inside the given serialized object.
+     * @see FileConfiguration#getDataFiled(SerializedObject)
+     */
     @SuppressWarnings("unchecked")
     protected <T> T getDataFieldFromSerializedObject(@NotNull SerializedObject obj){
         try{
@@ -77,6 +84,14 @@ public abstract class FileConfiguration implements Configuration{
         }
     }
 
+    /**
+     * Convert the list of strings to a list of enums of given type. The list must contain the string representations
+     * of the enum type.
+     *
+     * @param names The list of enum names.
+     * @param classOfT The type of the enum the list is converted to.
+     * @return A list containing the actual enum values from the name list.
+     */
     @SuppressWarnings("unchecked")
     protected <T> List<T> getEnumList(@NotNull List<String> names, @NotNull Class<T> classOfT){
         List<T> res = new ArrayList<>(names.size());
@@ -92,6 +107,13 @@ public abstract class FileConfiguration implements Configuration{
         return res;
     }
 
+    /**
+     * Convert a string representation of an enum into the specific enum value.
+     *
+     * @param elem The string representation of the enum.
+     * @param classOfT The type of the desired enum.
+     * @return The actual enum representation based on the given string.
+     */
     @NotNull
     @SuppressWarnings("unchecked")
     protected <T> T convertToEnum(@NotNull String elem, @NotNull Class<T> classOfT){
@@ -102,6 +124,14 @@ public abstract class FileConfiguration implements Configuration{
         }
     }
 
+    /**
+     * Since the storage of a serialized object is held in a specific object like JsonObject, XMLDocument etc.,
+     * we can retrieve this storage by using the reflection API. By default, the storage field is named data.
+     *
+     * @param obj The object to retrieve the storage object from.
+     * @return The instance of the storage object in the given serialized object.
+     * @throws NoSuchFieldException If the data field was not found.
+     */
     private Field getDataFiled(@NotNull SerializedObject obj) throws NoSuchFieldException {
         try{
             return obj.getClass().getDeclaredField("data");

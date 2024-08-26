@@ -105,6 +105,12 @@ public enum SerializableType {
         }
     }
 
+    /**
+     * Get the serializable type based on a given implementation class.
+     *
+     * @param implClass The concrete implementation class of a {@link SerializedObject}.
+     * @return The serializable type for the given implementation class or null if there is no type for the given class.
+     */
     public static SerializableType fromImplementationClass(Class<?> implClass){
         for(SerializableType type : values()){
             if(type.implClass == implClass){

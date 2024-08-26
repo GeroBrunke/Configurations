@@ -357,11 +357,23 @@ public class XmlConfiguration extends FileConfiguration {
         return this.toPrettyString();
     }
 
+    /**
+     * Get the XML element associated with the given path. If there is no element mapped to the given path
+     * then a new one is created and linked to the provided path.
+     *
+     * @param path The path to the XML element.
+     * @return The XML element linked to the path.
+     */
     @NotNull
     protected Element getElement(@NotNull String path){
         return this.hasMember(path) ? this.getElement0(path) : this.createNewElement(path);
     }
 
+    /**
+     * Load the config values from the underlying file and return the root element of the XML file.
+     *
+     * @return The root element of that XML config file.
+     */
     protected Element loadDocument(){
         try(FileInputStream fis = new FileInputStream(this.file)){
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -375,6 +387,13 @@ public class XmlConfiguration extends FileConfiguration {
         }
     }
 
+    /**
+     * Get the deepest element of the given config path. For example, the element returned for the path "one.two.three"
+     * is the child with the name "three" from the element "two" that itself is a child of the element "one".
+     *
+     * @param path The path to the element.
+     * @return The element at the end of the given path.
+     */
     @NotNull
     private Element getElement0(@NotNull String path){
         if(!path.contains(".")){
@@ -392,6 +411,14 @@ public class XmlConfiguration extends FileConfiguration {
         return current;
     }
 
+    /**
+     * Create a new element under the given path. If the path contains parent dependencies (indicated with .) then the parent
+     * at the second to last index has to exist. For example, if the element at "one.two.three.four" is created, then
+     * the element at "one.two.three" has to exist beforehand or an exception will be thrown.
+     *
+     * @param path The path for the new element.
+     * @return The newly created element.
+     */
     @NotNull
     private Element createNewElement(@NotNull String path){
         Element parent;
@@ -417,6 +444,11 @@ public class XmlConfiguration extends FileConfiguration {
         return newElem;
     }
 
+    /**
+     * Convert the current config state into a pretty and readable XML string.
+     *
+     * @return The pretty formatted XML string.
+     */
     private String toPrettyString(){
         this.removeParent(this.config);
 
@@ -430,16 +462,35 @@ public class XmlConfiguration extends FileConfiguration {
         return str;
     }
 
+    /**
+     * Update the content of the given element to the new value.
+     *
+     * @param elem The element to update.
+     * @param value The new value for that element.
+     */
     private void setContent(@NotNull Element elem, @NotNull String value){
         elem.removeContent();
         elem.addContent(value);
     }
 
+    /**
+     * Detach the given element from its parent if the parent exists.
+     *
+     * @param element The element to detach from its parent.
+     */
     private void removeParent(@NotNull Element element){
         if(element.getParent() != null)
             element.getParent().removeContent(element);
     }
 
+    /**
+     * Set a list of primitive objects or strings inside the given element. For this, the list is converted to a unique
+     * string representation that is then inserted as the element's value. As an example, the integer list [1, 2, 3, 4]
+     * is converted to the string "1, 2, 3, 4".
+     *
+     * @param elem The element that holds the string version of that list.
+     * @param list The primitive list to write.
+     */
     private void setPrimitiveList(@NotNull Element elem, @NotNull List<?> list){
         StringBuilder entry = new StringBuilder();
         for(var e : list){
@@ -450,6 +501,15 @@ public class XmlConfiguration extends FileConfiguration {
         elem.setText(entry.toString());
     }
 
+    /**
+     * Retrieve the primitve or string list from the given element. For this, the text value of the given element is
+     * converted back to a java representation of a list. As an example, the string "1, 2, 3, 4" is converted to the
+     * integer list [1, 2, 3, 4].
+     *
+     * @param elem The element that stores the list.
+     * @param classOfT The type of the list elements.
+     * @return The java representation of the primitive list.
+     */
     @SuppressWarnings("unchecked")
     private <T> List<T> getPrimitiveList(@NotNull Element elem, @NotNull Class<T> classOfT){
         String[] d = elem.getText().split(", ");
