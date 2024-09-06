@@ -598,6 +598,12 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         return Optional.empty();
     }
 
+    /**
+     * Extract a primitive value from a given JSON primitive object.
+     *
+     * @param json The JSON representation of the primitive object.
+     * @return The actual java primitive object.
+     */
     private Object extractPrimitive(@NotNull JsonPrimitive json){
         if(json.isString()){
             return json.getAsString();

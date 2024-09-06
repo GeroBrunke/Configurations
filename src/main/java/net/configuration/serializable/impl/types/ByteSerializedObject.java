@@ -384,10 +384,23 @@ public class ByteSerializedObject extends AbstractSerializedObject {
         }
     }
 
+    /**
+     * Convert a given byte array to its string representation.
+     *
+     * @param data The array to convert.
+     * @return The string representatuion of the array.
+     */
     private String arrayToStr(byte[] data){
         return Arrays.toString(data);
     }
 
+    /**
+     * Load the data stored inside the given byte buffer. The buffer must contain pairs of name <-> value that are separated
+     * with {;}. The buffer contains then the data as "lengthOfEntry + name + {;} + value" for each map entry.
+     *
+     * @param data The byte representation of the map.
+     * @return The name - value pairs stored inside the given buffer.
+     */
     public static Map<String, String> load(ByteBuffer data){
         Map<String, String> map = new HashMap<>();
 
@@ -410,6 +423,13 @@ public class ByteSerializedObject extends AbstractSerializedObject {
         return map;
     }
 
+    /**
+     * Create a serialized version of the string representation of an byte array. The string representation should look
+     * like this: array = [1, -3, 0, 3, ...] in order for this to work.
+     *
+     * @param str The string representation of a byte array that stores some serialized object.
+     * @return an optional containing the data from the string representation as a byte array format.
+     */
     private Optional<ByteSerializedObject> createFromStr(@NotNull String str){
         if(str.isBlank())
             return Optional.empty();
@@ -417,6 +437,12 @@ public class ByteSerializedObject extends AbstractSerializedObject {
         return Optional.of(new ByteSerializedObject(ByteBuffer.wrap(createArrayFromString(str))));
     }
 
+    /**
+     * Restore the byte[] from its string representation. The byte array has to be represented as [1, 3, 5, -5, ...].
+     *
+     * @param str The string representation of a byte array.
+     * @return The actual byte array.
+     */
     public static byte[] createArrayFromString(@NotNull String str){
         String[] d = str.substring(1, str.length() -1).split(", ");
         byte[] bytes = new byte[d.length];

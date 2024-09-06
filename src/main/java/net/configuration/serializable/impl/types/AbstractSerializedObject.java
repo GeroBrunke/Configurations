@@ -647,6 +647,13 @@ public abstract class AbstractSerializedObject implements SerializedObject {
     }
 
 
+    /**
+     * Retrieve the primitive array mapped to the given string.
+     *
+     * @param name The name the array is mapped to.
+     * @param classOfT The type of elements of the primitive array.
+     * @return The primitive array of given type mapped to the name.
+     */
     @SuppressWarnings("unchecked")
     private <T> T[] getPrimitiveArray(@NotNull String name, @NotNull Class<T> classOfT){
         if(classOfT == Short.class || classOfT == Integer.class){
@@ -692,6 +699,13 @@ public abstract class AbstractSerializedObject implements SerializedObject {
         return (T[]) Array.newInstance(classOfT, 0);
     }
 
+    /**
+     * Retrieve a primitive array containing float or double values mapped to the given name.
+     *
+     * @param name The name the real valued array is mapped to.
+     * @param classOfT The type of elements inside the array (float or double).
+     * @return The double/float array mapped to the name.
+     */
     @SuppressWarnings("unchecked")
     private <T> T[] getPrimitiveDecimalArray(@NotNull String name, @NotNull Class<T> classOfT){
         if(classOfT == Float.class || classOfT == Double.class){
@@ -719,6 +733,13 @@ public abstract class AbstractSerializedObject implements SerializedObject {
         return (T[]) Array.newInstance(classOfT, 0);
     }
 
+    /**
+     * Retrieve the primitive array containing byte, boolean, char or string values mapped to the given name.
+     *
+     * @param name The name the array is mapped to.
+     * @param classOfT The type of elements inside the array (byte, boolean, char, String)
+     * @return The primitve array mapped to the name.
+     */
     @SuppressWarnings("unchecked")
     private <T> T[] getPrimitiveArray0(@NotNull String name, @NotNull Class<T> classOfT){
         if(classOfT == Byte.class || classOfT == Boolean.class){
@@ -765,6 +786,13 @@ public abstract class AbstractSerializedObject implements SerializedObject {
         return (T[]) Array.newInstance(classOfT, 0);
     }
 
+    /**
+     * Set a primitive array mapped to the given name inside this project.
+     *
+     * @param name The name the array is mapped to.
+     * @param array The primitive array to set.
+     * @param classOfT A primitive/wrapper class or a string class.
+     */
     private <T> void setPrimitiveArray(@NotNull String name, T @NotNull[] array, @NotNull Class<T> classOfT){
         if(classOfT == Byte.class || classOfT == Boolean.class){
             List<Byte> list = new ArrayList<>(array.length);
@@ -807,6 +835,13 @@ public abstract class AbstractSerializedObject implements SerializedObject {
         this.setCharArray(name, array, classOfT);
     }
 
+    /**
+     * Set the char array inside this instance mapped to the given name.
+     *
+     * @param name The name the char array is set to.
+     * @param array The char array to set into this object.
+     * @param classOfT The type of the array (char, Char).
+     */
     private <T> void setCharArray(@NotNull String name, T @NotNull[] array, @NotNull Class<T> classOfT){
         if(classOfT == Character.class){
             List<String> list = new ArrayList<>(array.length);

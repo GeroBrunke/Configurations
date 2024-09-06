@@ -27,6 +27,13 @@ public class MapSerializable implements SerializableObject {
 
     }
 
+    /**
+     * Retrieve the map object from the serialized version.
+     *
+     * @param classOfK The type of the key elements.
+     * @param classOfV The type of the value elements.
+     * @return A java map representation of the serialized tuple list from this object.
+     */
     @SuppressWarnings("unchecked")
     public <K,V> Map<K,V> getMap(@NotNull Class<K> classOfK, @NotNull Class<V> classOfV){
         Map<K,V> map = new HashMap<>();

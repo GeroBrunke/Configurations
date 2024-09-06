@@ -23,6 +23,11 @@ public record SimpleCreatorImpl<T extends SerializableObject>(Class<T> classOfT)
         return (T) instance.read(src);
     }
 
+    /**
+     * Create an instance of the serializable object from the generic type T by invoking the classes default constructor.
+     *
+     * @return A new instance of the generic type T.
+     */
     private T createInstance() {
         try {
             Constructor<T> con = classOfT.getDeclaredConstructor();

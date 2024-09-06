@@ -340,6 +340,13 @@ public class PropertiesSerializedObject extends AbstractSerializedObject{
         return Optional.empty();
     }
 
+    /**
+     * Convert the raw string representation to its deserialized properties representation.
+     *
+     * @param data The raw string to convert.
+     * @param prop The properties object in which the string data should be written.
+     * @throws IOException If the properties could not be loaded from the string representation.
+     */
     private void deserializeStringToProperties(@NotNull String data, @NotNull Properties prop) throws IOException {
         List<String> nestedStrings = new LinkedList<>();
         int l = 0;
@@ -363,6 +370,12 @@ public class PropertiesSerializedObject extends AbstractSerializedObject{
 
     }
 
+    /**
+     * Read a nested properties string from the given data and return the first nested string that was found.
+     *
+     * @param data The string to read.
+     * @return The first found nested string.
+     */
     private String readNested(@NotNull String data){
         StringBuilder s = new StringBuilder();
         for(int i = 0; i < data.length(); i++){

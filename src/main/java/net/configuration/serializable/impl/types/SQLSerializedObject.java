@@ -417,11 +417,25 @@ public class SQLSerializedObject extends ByteSerializedObject {
         return connection;
     }
 
+    /**
+     * Insert a complex object into this serialized object, i.e. set a reference UUID as the key to the complex object
+     * entry in its table.
+     *
+     * @param name The name to map the complex object to.
+     * @param foreignKey The primary key of the complex objects entry in its table as a foreign key in this table.
+     * @param clazz The type of the complex object.
+     */
     private void setComplex(@NotNull String name, @NotNull UUID foreignKey, @NotNull Class<?> clazz){
         this.data.put(name, foreignKey.toString());
         this.types.put(name, clazz);
     }
 
+    /**
+     * Read the entry of this objects primary key from the corresponding type table.
+     *
+     * @return A map containing all the table entries (columnName - raw string value)
+     * @throws SQLException If the table row could not be read.
+     */
     @NotNull
     private Map<String, String> readFromTable() throws SQLException{
         if(!this.connection.isConnected())
@@ -455,6 +469,10 @@ public class SQLSerializedObject extends ByteSerializedObject {
     }
 
 
+    /**
+     * Create the table associated with objects of the type that is stored in this object. Recursively creates the tables
+     * of nested complex objects if they don't exist yet.
+     */
     private void createTable(){
         StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS " + this.tableName + "(id CHAR(36) NOT NULL, class VARCHAR(1024) NOT NULL");
 
@@ -511,6 +529,9 @@ public class SQLSerializedObject extends ByteSerializedObject {
         }
     }
 
+    /**
+     * Insert this objects values into the corresponding SQL tables.
+     */
     private void writeToTable(){
         if(this.isPresent(this.primaryKey))
             return;
@@ -540,6 +561,10 @@ public class SQLSerializedObject extends ByteSerializedObject {
 
     }
 
+    /**
+     * @return A map containing all the foreign keys from this objects table. The map contains the column names as the keys
+     * and the referred tables as values to the keys.
+     */
     @NotNull
     private Map<String, String> getForeignKeys() {
         Map<String, String> map = new HashMap<>();
@@ -562,6 +587,14 @@ public class SQLSerializedObject extends ByteSerializedObject {
         return map;
     }
 
+    /**
+     * Get the java class type of the objects that are stored in the given table at the row with the given key.
+     *
+     * @param connection The connection to the SQL database.
+     * @param table The name of the table to check.
+     * @param key The primary key of the row to check.
+     * @return The java class of the objects in that table.
+     */
     @NotNull
     public static Class<?> getClass(@NotNull SQLConnection connection, @NotNull String table, @NotNull String key){
         try(PreparedStatement pst = connection.getConnection().prepareStatement("SELECT class FROM " + table + " WHERE id = '" + key + "'")){
@@ -577,6 +610,15 @@ public class SQLSerializedObject extends ByteSerializedObject {
         throw new SerializationException("No class found in table " + table + " for key " + key);
     }
 
+    /**
+     * Change the key name to a valid SQL column name, i.e. if the column name is a number, convert each digit to its name.
+     * For example, the column name "21" would be changed to "two-one". If the key name is already valid, then nothing
+     * will change.
+     *
+     * @param key The key to change.
+     * @return A valid SQL column name for the given key.
+     * @see SQLSerializedObject#deserializeKey(String)
+     */
     @NotNull
     private String serializeKey(@NotNull String key){
         if(key.matches("-?\\d+")){ //regex for number
@@ -591,6 +633,16 @@ public class SQLSerializedObject extends ByteSerializedObject {
         return key;
     }
 
+    /**
+     * Revert the SQL column name back to its original field name, i.e. if the key contains "-", then it was created from
+     * a numeric string, so this conversion is reversed to obtain the numeric string again. For example, the column name
+     * "two-one" will be converted to "21". If the column name does not contain any "-" then it is directly retunred or
+     * if it matches a single number name like "three", then it is reverted to "3".
+     *
+     * @param columnName The column name to change.
+     * @return The deserialized column name.
+     * @see SQLSerializedObject#serializeKey(String)
+     */
     @NotNull
     private String deserializeKey(@NotNull String columnName){
         if(columnName.contains("-")){
@@ -614,6 +666,9 @@ public class SQLSerializedObject extends ByteSerializedObject {
         }
     }
 
+    /**
+     * Restore this objects state to that that is present in the SQL table.
+     */
     private void restore() {
         this.complexObjects.clear();
         this.data.clear();
@@ -626,6 +681,12 @@ public class SQLSerializedObject extends ByteSerializedObject {
         }
     }
 
+    /**
+     * Check if a row with the given key uuid is present in the SQL table.
+     *
+     * @param uuid The primary key value to check.
+     * @return True iff there is a row with the given primary key uuid.
+     */
     private boolean isPresent(@NotNull UUID uuid){
         try(PreparedStatement pst = this.connection.getConnection().prepareStatement("SELECT COUNT(*) FROM " + this.tableName + " WHERE id = '" + uuid + "'")){
             ResultSet rs = pst.executeQuery();

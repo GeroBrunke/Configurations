@@ -116,6 +116,12 @@ public class SerializationHelper {
         }
     }
 
+    /**
+     * Convert the given collection into a list of given element types.
+     *
+     * @param original The collection to deep copy.
+     * @return A list containing all the elements of the given collection as elements of type T.
+     */
     @SuppressWarnings("unchecked")
     private static <T> List<T> castList(@NotNull Collection<?> original){
         List<T> result = new ArrayList<>();
@@ -232,6 +238,16 @@ public class SerializationHelper {
         return Optional.empty();
     }
 
+    /**
+     * Get the primitive integer type mapped to the given name inside the provided serialized object.
+     * Primitive integer types for this method consist of byte, short, int, long.
+     *
+     * @param name The name the integer is mapped to.
+     * @param obj The serialized object to get the integer type from.
+     * @param classOfT The type of the integer.
+     * @return An optional containing the integer mapped to the given name or an empty optional, if there is no integer
+     * type mapped to that name.
+     */
     @SuppressWarnings("unchecked")
     private static <T> Optional<T> getPrimitiveInteger(@NotNull String name, @NotNull SerializedObject obj, Class<?> classOfT){
         if(classOfT == Byte.class){

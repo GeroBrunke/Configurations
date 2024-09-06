@@ -486,6 +486,9 @@ public class XmlSerializedObject extends AbstractSerializedObject{
         return this.toPrettyString();
     }
 
+    /**
+     * @return A pretty human-readable XML string representing this objects data.
+     */
     private String toPrettyString(){
         if(this.data.getParent() != null)
             this.data.getParent().removeContent(this.data);
@@ -500,6 +503,12 @@ public class XmlSerializedObject extends AbstractSerializedObject{
         return str;
     }
 
+    /**
+     * Add the element and all its children to the given writeTo element.
+     *
+     * @param elem The element and all its children to write.
+     * @param writeTo The element to which the given element is attached.
+     */
     private void rekAddChildren(@NotNull Element elem, Element writeTo){
         for(Element child : elem.getChildren()){
             Element newChild = new Element(child.getName());
@@ -512,6 +521,12 @@ public class XmlSerializedObject extends AbstractSerializedObject{
         }
     }
 
+    /**
+     * Set the given name - value pair inside the root element of this object.
+     *
+     * @param name The field name.
+     * @param value The actual field value to write.
+     */
     private void set0(@NotNull String name, @NotNull String value){
         if(StringUtils.isNumeric(name)){
             //field name was invalid, so add a specific prefix
@@ -524,6 +539,12 @@ public class XmlSerializedObject extends AbstractSerializedObject{
         this.data.addContent(e);
     }
 
+    /**
+     * Retrieve the string representation of the value that is mapped to the given name.
+     *
+     * @param name The name the value is mapped to.
+     * @return The value at the given name.
+     */
     private String get0(@NotNull String name){
         if(StringUtils.isNumeric(name)){
             //field name was invalid, so add a specific prefix
@@ -533,6 +554,12 @@ public class XmlSerializedObject extends AbstractSerializedObject{
         return this.data.getChildText(name);
     }
 
+    /**
+     * Check if the current XML document does not contain the element of given name.
+     *
+     * @param name The name to check.
+     * @return True iff the XML document does not contain an element with that name.
+     */
     private boolean doesNotContain0(@NotNull String name){
         if(StringUtils.isNumeric(name)){
             //field name was invalid, so add a specific prefix
@@ -542,6 +569,13 @@ public class XmlSerializedObject extends AbstractSerializedObject{
         return this.data.getChildText(name) == null;
     }
 
+    /**
+     * Convert a list of primitive objects into its string representation. For example, the integer list [1, 2, 3] is
+     * converted to the string "1, 2, 3".
+     *
+     * @param list The primitive list to convert.
+     * @return A string representation of the given primitive list.
+     */
     private String listToString(Collection<?> list){
         StringBuilder str = new StringBuilder();
         for(var e : list){

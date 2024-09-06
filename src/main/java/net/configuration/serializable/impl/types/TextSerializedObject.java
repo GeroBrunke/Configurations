@@ -177,27 +177,13 @@ public class TextSerializedObject extends ByteSerializedObject{
     }
 
 
-    private static ByteBuffer convertMapToBuffer(@NotNull Map<String, String> map){
-        ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
-        for(var e : map.entrySet()){
-            byte[] entry = (e.getKey() + "{;}" + e.getValue()).getBytes(StandardCharsets.UTF_8);
-            buffer.putInt(entry.length);
-            buffer.put(entry);
-        }
-
-        //Trim the byte array to the current size to avoid unused memory
-        int pos = buffer.position();
-        if(pos != 0){
-            byte[] flushedData = new byte[pos];
-            for(int i = 0; i < pos; i++){
-                flushedData[i] = buffer.get(i);
-            }
-            buffer = ByteBuffer.wrap(flushedData);
-        }
-
-        return buffer;
-    }
-
+    /**
+     * Convert the raw string representation of a text serialized object into the name - value pairs stored inside the
+     * string.
+     *
+     * @param data The raw string representation of the text serialized object.
+     * @return The name - value pairs stored in the string.
+     */
     @NotNull
     public static Map<String, String> deserializeString(@NotNull String data) {
         if(data.isEmpty())
@@ -254,7 +240,36 @@ public class TextSerializedObject extends ByteSerializedObject{
 
     }
 
-    private record Nested (int left, int right, @NotNull String value){
+    /**
+     * Convert the current name - value map into a byte[] representation.
+     *
+     * @param map The map to convert.
+     * @return The byte[] representation of the map.
+     */
+    private static ByteBuffer convertMapToBuffer(@NotNull Map<String, String> map){
+        ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
+        for(var e : map.entrySet()){
+            byte[] entry = (e.getKey() + "{;}" + e.getValue()).getBytes(StandardCharsets.UTF_8);
+            buffer.putInt(entry.length);
+            buffer.put(entry);
+        }
 
+        //Trim the byte array to the current size to avoid unused memory
+        int pos = buffer.position();
+        if(pos != 0){
+            byte[] flushedData = new byte[pos];
+            for(int i = 0; i < pos; i++){
+                flushedData[i] = buffer.get(i);
+            }
+            buffer = ByteBuffer.wrap(flushedData);
+        }
+
+        return buffer;
     }
+
+    /**
+     * Helper record to save nested strings of objects inside the raw string. Saves the beginning and end index of nested strings
+     * in the original string and its string value.
+     */
+    private record Nested (int left, int right, @NotNull String value){ }
 }

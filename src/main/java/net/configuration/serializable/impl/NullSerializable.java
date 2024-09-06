@@ -33,6 +33,12 @@ public class NullSerializable implements SerializableObject {
         return this;
     }
 
+    /**
+     * Check if the mapped value is a placeholder for a null object. If the value is anything different from
+     * the specific null placeholder, then an exception will be thrown.
+     *
+     * @return null if the value is the actual null placeholder.
+     */
     public Object getValue(){
         if(this.value.equals("INVALID"))
             return null;

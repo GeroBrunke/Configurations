@@ -31,6 +31,13 @@ public class ObjectSerializable implements SerializableObject  {
                 throw new SerializationException("Cannot serialize object " + object);
     }
 
+    /**
+     * Retrieve the data inside this object as an object of given type.
+     *
+     * @param classOfT The type of the object inside this instance.
+     * @return An optional containing the data as an instance of T or an empty optional if the current object cannot
+     * be represented as an instance of T.
+     */
     @SuppressWarnings("unchecked")
     public <T> Optional<T> getData(@NotNull Class<T> classOfT){
         if(this.object == null)
@@ -63,6 +70,13 @@ public class ObjectSerializable implements SerializableObject  {
         }
     }
 
+    /**
+     * Check if a given object is primitive or serializable.
+     *
+     * @param object The object to check.
+     * @return True iff the given object is primitive or string or enum or map/list or implements {@link SerializableObject}
+     *  or implements {@link SerializedObject}.
+     */
     public static boolean isInvalid(@NotNull Object object){
         return !(object instanceof SerializableObject) && !(object instanceof SerializedObject) && !(object instanceof Map<?, ?>) &&
                 !(object instanceof List<?>) && !(object instanceof Enum<?>) && !(object instanceof String) &&

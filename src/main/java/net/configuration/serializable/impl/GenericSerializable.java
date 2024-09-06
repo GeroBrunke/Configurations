@@ -3,6 +3,15 @@ package net.configuration.serializable.impl;
 import net.configuration.serializable.api.*;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Allows for generic classes to be serialized correctly iff the provides generic type is itself also serializable.
+ * The generic type T is considered serializable iff {@link ObjectSerializable#isInvalid(Object)} does not return true for
+ * an instance of T. Furthermore, this class has to be extended by a user defined subclass in order to serialize generic
+ * classes and objects.
+ *
+ * @param <T> The serializable generic type parameter.
+ * @see ObjectSerializable#isInvalid(Object)
+ */
 public class GenericSerializable<T> implements SerializableObject  {
 
     @SerializationAPI

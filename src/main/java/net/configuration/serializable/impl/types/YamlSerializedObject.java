@@ -438,6 +438,13 @@ public class YamlSerializedObject extends AbstractSerializedObject{
         return Optional.empty();
     }
 
+    /**
+     * Deep copy the given source section into the target section.
+     *
+     * @param source The source section to copy.
+     * @param target The target section to paste. The copied section is attached to this one.
+     * @return The resulting target section.
+     */
     private ConfigurationSection copySection(ConfigurationSection source, ConfigurationSection target) {
         for (String key : source.getKeys(false)) {
             Object value = source.get(key);
