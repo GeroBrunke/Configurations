@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Logger;
@@ -450,8 +451,16 @@ public class JsonSerializedObject extends AbstractSerializedObject{
         Optional<Field> fieldOpt = this.getField(name);
         if(fieldOpt.isPresent()){
             Field field = fieldOpt.get();
-            ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
-            Class<?> listType = (Class<?>) stringListType.getActualTypeArguments()[0];
+            Type genericType = field.getGenericType();
+            Class<?> listType;
+            if(!genericType.getTypeName().endsWith("[]")){
+                ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
+                listType = (Class<?>) stringListType.getActualTypeArguments()[0];
+
+            }else{
+                listType = Byte.class;
+            }
+
             if(listType != Byte.class)
                 throw new IllegalArgumentException(field + " is not a byte list");
 

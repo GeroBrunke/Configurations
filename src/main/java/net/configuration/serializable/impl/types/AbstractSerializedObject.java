@@ -514,7 +514,8 @@ public abstract class AbstractSerializedObject implements SerializedObject {
             //check if the field type is valid: PrimitiveWrapper, String, Enum, Collection or a serializable object
             if(!(ClassUtils.isPrimitiveWrapper(type) || type == String.class || type.isEnum() ||
                     Collection.class.isAssignableFrom(type) || SerializableObject.class.isAssignableFrom(type) ||
-                    SerializedObject.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type) || type == Object.class)){
+                    SerializedObject.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type) || type == Object.class
+            || type.isArray())){
 
                 throw new SerializationException("Cannot serialize field {" + name + ", type: " + type.getName() + "} " +
                         "in class " + this.clazz.getName());

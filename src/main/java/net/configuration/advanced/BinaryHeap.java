@@ -77,7 +77,7 @@ public class BinaryHeap<K extends Comparable<? super K>, E> extends AddressableP
     @Override
     public void decreaseKey(@NotNull E element, @NotNull K newKey) {
         K oldKEy = this.getKey(element);
-        if(this.comparator.compare(oldKEy, newKey) <= 0){
+        if(this.comparator.compare(oldKEy, newKey) < 0){
             throw new IllegalArgumentException("New key has no lower value than the old key");
         }
 

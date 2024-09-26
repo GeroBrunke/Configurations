@@ -1,5 +1,6 @@
 package net.configuration.advanced;
 
+import com.google.common.math.IntMath;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.configuration.serializable.api.Creator;
@@ -28,11 +29,13 @@ public class BucketQueue<E> extends AddressablePriorityQueue<Integer, E> {
     @SuppressWarnings("unused")
     public BucketQueue(@NotNull Comparator<Integer> comparator, @NotNull Comparable<Integer> defaultKey, @NotNull Class<E> elementType) {
         super(comparator, (Integer) defaultKey, elementType);
+        init();
     }
 
     @SuppressWarnings("unused") //called via reflection API
     protected BucketQueue(){
         super();
+        init();
     }
 
     @Override
@@ -51,6 +54,7 @@ public class BucketQueue<E> extends AddressablePriorityQueue<Integer, E> {
 
         this.buckets[oldKey].remove(element);
         this.buckets[newKey % size].add(element);
+        this.min = Math.min(this.min, newKey % size);
     }
 
     @SuppressWarnings("unchecked")
@@ -76,7 +80,7 @@ public class BucketQueue<E> extends AddressablePriorityQueue<Integer, E> {
     @Override
     public void decreaseKey(@NotNull E element, @NotNull Integer newKey) {
         int oldKey = this.getKeyModSize(element);
-        if(oldKey == INVALID_SIZE || oldKey < newKey){
+        if(oldKey == INVALID_SIZE || oldKey % size < newKey % size){
             throw new IllegalArgumentException("Invalid new key, either no decrease or element not in queue");
         }
 
@@ -258,6 +262,7 @@ public class BucketQueue<E> extends AddressablePriorityQueue<Integer, E> {
 
     @SuppressWarnings("unchecked")
     private void init(int size){
+        size = this.getNextLargerPrime(size);
         this.buckets = new List[size];
         for(int i = 0; i < size; i++){
             this.buckets[i] = new LinkedList<>();
@@ -334,7 +339,26 @@ public class BucketQueue<E> extends AddressablePriorityQueue<Integer, E> {
         return result;
     }
 
-    private class RadixIterator implements Iterator<E>{
+    /**
+     * Find the least small prime number p that is larger than the given positive integer n.
+     * @param n The lower bound for the search.
+     * @return The next prime number larger than the given n.
+     */
+    private int getNextLargerPrime(int n){
+        if(n < 2)
+            return 2;
+
+        int candidate = n + 1;
+        while(true){
+            if(IntMath.isPrime(candidate)){
+                return candidate;
+            }
+
+            candidate++;
+        }
+    }
+
+    private class RadixIterator implements Iterator<E> {
 
         private int current = BucketQueue.this.min;
         private final int max = BucketQueue.this.min;
@@ -342,10 +366,10 @@ public class BucketQueue<E> extends AddressablePriorityQueue<Integer, E> {
 
         @Override
         public boolean hasNext() {
-            if(bucketIterator == null)
+            if (bucketIterator == null)
                 bucketIterator = buckets[current].iterator();
 
-            if(bucketIterator.hasNext())
+            if (bucketIterator.hasNext())
                 return true;
 
             return this.findNextListIterator();
@@ -356,11 +380,11 @@ public class BucketQueue<E> extends AddressablePriorityQueue<Integer, E> {
             return bucketIterator.next();
         }
 
-        private boolean findNextListIterator(){
+        private boolean findNextListIterator() {
             //update to next iterator
-            while((++current) % size != max){
+            while ((++current) % size != max) {
                 bucketIterator = buckets[current].iterator();
-                if(bucketIterator.hasNext()){
+                if (bucketIterator.hasNext()) {
                     return true;
                 }
             }

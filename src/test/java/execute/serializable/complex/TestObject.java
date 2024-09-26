@@ -28,6 +28,7 @@ public class TestObject implements SerializableObject {
     private List<String> list;
     private TestObject complex;
     private Object object;
+    private Byte[] array;
 
     @SuppressWarnings("unused")
     private TestObject(){
@@ -43,6 +44,7 @@ public class TestObject implements SerializableObject {
         this.list = List.of("I", "am", "a", "list", "of", "strings");
         this.complex = new TestObject(2);
         this.object = 9;
+        this.array = new Byte[]{1,2,3,4,6};
     }
 
     public TestObject(int z){
@@ -54,6 +56,7 @@ public class TestObject implements SerializableObject {
         this.list = List.of("I", "am", "a", "list", "of", "strings", "in a tree");
         this.complex = null;
         this.object = "Hallo";
+        this.array = new Byte[]{10,9,8,7};
     }
 
     @Override
@@ -65,6 +68,7 @@ public class TestObject implements SerializableObject {
         dest.setStringList(list);
         dest.setObject("execute", complex);
         dest.setObject("object", object);
+        dest.setArray("array", array);
     }
 
     @Override
@@ -76,6 +80,7 @@ public class TestObject implements SerializableObject {
         list = (List<String>) src.getStringList().orElse(new ArrayList<>());
         object = src.getObject("object", Object.class).orElse(null);
         complex = src.getObject("execute", TestObject.class).orElse(null);
+        array = src.getArray("array", Byte.class).orElse(new Byte[0]);
 
         return this;
     }

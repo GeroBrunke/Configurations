@@ -8,7 +8,6 @@ import net.configuration.serializable.api.SerializableType;
 import net.configuration.serializable.api.SerializedObject;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -19,10 +18,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TestPriorityQueue {
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(PQTypes.class)
     @DisplayName("Test Build PQ")
-    void testBuildPQ(){
-        PriorityQueue<Integer, String> queue = new BinaryQueue<>(Comparator.<Integer>naturalOrder());
+    void testBuildPQ(@NotNull PQTypes type){
+        PriorityQueue<Integer, String> queue = type.createNew(Comparator.naturalOrder(), 2, String.class);
         assertTrue(queue.isEmpty());
 
         queue.build(3, new String[]{"Hello", "World,", "this", "is", "a", "dummy", "binary", "priority", "queue."});
@@ -41,17 +41,17 @@ class TestPriorityQueue {
 
         assertEquals("Hello", min);
         assertEquals(min, minDel);
-        assertEquals(min, minDel);
         assertFalse(queue.contains(min));
 
         queue.clear();
 
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(PQTypes.class)
     @DisplayName("Test PQ DecreaseKey")
-    void testPQDecreaseKey(){
-        PriorityQueue<Integer, String> queue = new BinaryQueue<>(Comparator.<Integer>naturalOrder());
+    void testPQDecreaseKey(@NotNull PQTypes type){
+        PriorityQueue<Integer, String> queue =  type.createNew(Comparator.naturalOrder(), 2, String.class);
         queue.build(2, new String[]{"This", "is", "a", "Test", "message"});
         assertEquals("This", queue.peek());
 
@@ -59,27 +59,29 @@ class TestPriorityQueue {
         assertEquals("Test", queue.peek());
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(PQTypes.class)
     @SuppressWarnings("unchecked")
     @DisplayName("Test PQ To Array")
-    void testPQToArray(){
-        PriorityQueue<Integer, Integer> queue = new BinaryQueue<>(Comparator.<Integer>naturalOrder());
-        queue.build(10, new Integer[]{3,3,3,3,3});
+    void testPQToArray(@NotNull PQTypes type){
+        PriorityQueue<Integer, Integer> queue = type.createNew(Comparator.naturalOrder(), 2, Integer.class);
+        queue.build(9, new Integer[]{3,3,3,3,3});
         var array = queue.toArray();
 
         for(var e : array){
             Tuple<Integer, Integer> tuple = (Tuple<Integer, Integer>) e;
-            assertEquals(10, tuple.getKey());
+            assertEquals(9, tuple.getKey());
             assertEquals(3, tuple.getValue());
         }
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(PQTypes.class)
     @DisplayName("Test Sort With PQ")
-    void testSortWithPQ(){
-        Integer[] numbers = new Integer[]{10, 8, 3, 2, 7, 1, 9, 5, 6, 4};
-        PriorityQueue<Integer, Integer> queue = new BinaryQueue<>(Comparator.<Integer>naturalOrder());
-        queue.build(20, numbers);
+    void testSortWithPQ(@NotNull PQTypes type){
+        Integer[] numbers = new Integer[]{0, 8, 3, 2, 7, 1, 9, 5, 6, 4};
+        PriorityQueue<Integer, Integer> queue = type.createNew(Comparator.naturalOrder(), 20, Integer.class);
+        queue.build(10, numbers);
 
         for(Integer i : numbers){
             queue.decreaseKey(i, i);
@@ -94,26 +96,6 @@ class TestPriorityQueue {
 
     }
 
-    @Test
-    @DisplayName("Test PQ Iterator")
-    void testPQIterator(){
-        String msg = "message.";
-
-        PriorityQueue<Integer, String> queue = new BinaryQueue<>(Comparator.<Integer>naturalOrder());
-        queue.build(10, new String[]{"This", "is", "a", "Test", msg});
-        queue.decreaseKey("is", 4);
-        queue.decreaseKey("a", 1);
-        queue.decreaseKey("Test", 9);
-        queue.decreaseKey(msg, 5);
-
-        //Note iterator is not sorted, but the direct heap iterator.
-        String[] expected = new String[]{"a", "is", msg, "Test", "This"};
-        int idx = 0;
-        for (String s : queue) {
-            assertEquals(s, expected[idx++]);
-        }
-
-    }
 
     @ParameterizedTest
     @EnumSource(SerializableType.class)

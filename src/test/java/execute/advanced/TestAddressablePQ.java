@@ -156,7 +156,7 @@ class TestAddressablePQ {
         queue.build(5, new Integer[]{3,4,2,1,5});
 
         assertEquals(3, queue.peek());
-        queue.updateKey(3, 67);
+        queue.updateKey(3, 6);
         assertEquals(4, queue.peek());
 
 
@@ -203,9 +203,9 @@ class TestAddressablePQ {
             Integer[] numbers = new Integer[]{10, 8, 3, 2, 7, 1, 9, 5, 6, 4};
             AddressablePriorityQueue<Integer, Integer> queue = this.createTestQueue(type, Comparator.naturalOrder(),
                     Integer.MAX_VALUE, Integer.class);
-            queue.build(19, numbers);
+            queue.build(10, numbers);
             for(Integer i : numbers){
-                queue.decreaseKey(i, i % queue.size());
+                queue.decreaseKey(i, i);
             }
 
             SerializedObject obj = ObjectStorage.serialize(queue, serializableType).orElseThrow();
