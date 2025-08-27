@@ -1,13 +1,17 @@
 package net.configuration.advanced;
 
-import net.configuration.serializable.api.SerializedObject;
+import net.configuration.serializable.api.*;
+import net.configuration.serializable.impl.SimpleCreatorImpl;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
+import java.util.*;
 
 public class PairingHeap<K extends Comparable<? super K>, V> extends AddressablePriorityQueue<K, V>{
+
+    @SerializationAPI
+    @SuppressWarnings({"unused", "rawtypes"})
+    private static final Creator<PairingHeap> CREATOR = new SimpleCreatorImpl<>(PairingHeap.class);
+
 
     /**
      * Create a new addressable priority queue based on the given key comparator.
@@ -18,6 +22,11 @@ public class PairingHeap<K extends Comparable<? super K>, V> extends Addressable
      */
     public PairingHeap(@NotNull Comparator<K> comparator, @NotNull K defaultKey, @NotNull Class<V> elementType) {
         super(comparator, defaultKey, elementType);
+    }
+
+    @SuppressWarnings("unused")
+    private PairingHeap(){
+        super();
     }
 
     @Override
@@ -34,6 +43,21 @@ public class PairingHeap<K extends Comparable<? super K>, V> extends Addressable
     public void merge(AddressablePriorityQueue<K, V> other) {
 
     }
+
+
+    @Override
+    public void write(@NotNull SerializedObject dest) {
+
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public @NotNull PairingHeap<K, V> read(@NotNull SerializedObject src) {
+
+
+        return this;
+    }
+
 
     @Override
     public void build(@NotNull K defaultKey, @NotNull V[] elements) {
@@ -135,16 +159,6 @@ public class PairingHeap<K extends Comparable<? super K>, V> extends Addressable
 
     @Override
     public V peek() {
-        return null;
-    }
-
-    @Override
-    public void write(@NotNull SerializedObject dest) {
-
-    }
-
-    @Override
-    public @NotNull AddressablePriorityQueue<K, V> read(@NotNull SerializedObject src) {
         return null;
     }
 }

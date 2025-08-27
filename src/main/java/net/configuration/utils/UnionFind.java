@@ -1,4 +1,4 @@
-package net.configuration.advanced;
+package net.configuration.utils;
 
 import net.configuration.serializable.api.SerializableObject;
 import net.configuration.serializable.api.SerializedObject;

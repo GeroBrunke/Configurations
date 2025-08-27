@@ -2,7 +2,7 @@ package execute.advanced;
 
 import net.configuration.advanced.BinaryQueue;
 import net.configuration.advanced.PriorityQueue;
-import net.configuration.advanced.Tuple;
+import net.configuration.utils.Tuple;
 import net.configuration.serializable.api.ObjectStorage;
 import net.configuration.serializable.api.SerializableType;
 import net.configuration.serializable.api.SerializedObject;

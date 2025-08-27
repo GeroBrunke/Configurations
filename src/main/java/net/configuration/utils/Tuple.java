@@ -1,8 +1,9 @@
-package net.configuration.advanced;
+package net.configuration.utils;
 
 import com.google.gson.JsonObject;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class Tuple<K,V> implements Map.Entry<K, V> {
 
@@ -46,4 +47,16 @@ public class Tuple<K,V> implements Map.Entry<K, V> {
         return json.toString();
     }
 
+    //Check for GIT: Changed this class by adding these two methods: equals and hashCode
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Tuple<?, ?> tuple)) return false;
+        return Objects.equals(key, tuple.key) && Objects.equals(value, tuple.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key, value);
+    }
 }

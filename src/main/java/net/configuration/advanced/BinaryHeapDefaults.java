@@ -3,6 +3,7 @@ package net.configuration.advanced;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.configuration.serializable.api.SerializedObject;
+import net.configuration.utils.Tuple;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;

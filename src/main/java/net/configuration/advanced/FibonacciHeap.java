@@ -1,6 +1,9 @@
 package net.configuration.advanced;
 
+import net.configuration.serializable.api.Creator;
+import net.configuration.serializable.api.SerializationAPI;
 import net.configuration.serializable.api.SerializedObject;
+import net.configuration.serializable.impl.SimpleCreatorImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -9,6 +12,9 @@ import java.util.Iterator;
 
 public class FibonacciHeap<K extends Comparable<? super K>, V> extends AddressablePriorityQueue<K, V>{
 
+    @SuppressWarnings({"unused", "rawtypes"})
+    @SerializationAPI
+    private static final Creator<FibonacciHeap> CREATOR = new SimpleCreatorImpl<>(FibonacciHeap.class);
 
     /**
      * Create a new addressable priority queue based on the given key comparator.
@@ -19,6 +25,21 @@ public class FibonacciHeap<K extends Comparable<? super K>, V> extends Addressab
      */
     public FibonacciHeap(@NotNull Comparator<K> comparator, @NotNull K defaultKey, @NotNull Class<V> elementType) {
         super(comparator, defaultKey, elementType);
+    }
+
+    @SuppressWarnings("unused")
+    private FibonacciHeap(){
+        super();
+    }
+
+    @Override
+    public void write(@NotNull SerializedObject dest) {
+
+    }
+
+    @Override
+    public @NotNull FibonacciHeap<K, V> read(@NotNull SerializedObject src) {
+        return this;
     }
 
     @Override
@@ -139,13 +160,4 @@ public class FibonacciHeap<K extends Comparable<? super K>, V> extends Addressab
         return null;
     }
 
-    @Override
-    public void write(@NotNull SerializedObject dest) {
-
-    }
-
-    @Override
-    public @NotNull AddressablePriorityQueue<K, V> read(@NotNull SerializedObject src) {
-        return null;
-    }
 }

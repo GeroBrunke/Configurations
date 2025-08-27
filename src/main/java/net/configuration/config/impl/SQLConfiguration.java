@@ -1,6 +1,6 @@
 package net.configuration.config.impl;
 
-import net.configuration.advanced.Tuple;
+import net.configuration.utils.Tuple;
 import net.configuration.config.Configuration;
 import net.configuration.config.ConfigurationException;
 import net.configuration.network.SQLConnection;
